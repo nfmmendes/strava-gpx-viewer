@@ -10,8 +10,12 @@ gpx = gpxpy.parse(gpx_file)
 
 for track in gpx.tracks:
     for segment in track.segments:
+        if len(segment.points) == 0:
+            continue
+        previous = segment.points[0]
         for point in segment.points:
-                print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation} on time {point.time}')
+                print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation} on time {point.time}. Previous measurement {(point.time - previous.time).seconds} seconds ago')
+                previous = point
 
 for waypoint in gpx.waypoints:
     print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')
