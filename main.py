@@ -1,5 +1,15 @@
 import gpxpy
 import gpxpy.gpx
+import math
+from geopy import distance
+
+def calculateDistance(a, b):
+    p1 = (a.latitude, a.longitude, a.elevation)
+    p2 = (b.latitude, b.longitude, b.elevation)
+
+    flat_distance = distance.distance(p1[:2], p2[:2]).m
+
+    return math.sqrt(flat_distance**2 + (p2[2] - p1[2])**2)
 
 # Parsing an existing file:
 # -------------------------
@@ -14,8 +24,8 @@ for track in gpx.tracks:
             continue
         previous = segment.points[0]
         for point in segment.points:
-                print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation} on time {point.time}. Previous measurement {(point.time - previous.time).seconds} seconds ago')
-                previous = point
+            print(f'Coord: ({point.latitude},{point.longitude})\t Elevation: {point.elevation} \t Time: {point.time.strftime("%H:%M:%S")} \t Time Gap {(point.time - previous.time).seconds} seconds \t Distance {round(calculateDistance(previous, point),2)} meters')
+            previous = point
 
 for waypoint in gpx.waypoints:
     print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')
