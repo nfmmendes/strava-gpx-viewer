@@ -24,7 +24,11 @@ for track in gpx.tracks:
             continue
         previous = segment.points[0]
         for point in segment.points:
-            print(f'Coord: ({point.latitude},{point.longitude})\t Elevation: {point.elevation} \t Time: {point.time.strftime("%H:%M:%S")} \t Time Gap {(point.time - previous.time).seconds} seconds \t Distance {round(calculateDistance(previous, point),2)} meters')
+            lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
+            dist = round(calculateDistance(previous, point), 5)
+            gap = (time - previous.time).seconds
+            speed = 3.6*dist/gap if gap > 0 else 0
+            print(f'Coord: ({lat},{long})\t Elevation: {elevation} \t Time: {time.strftime("%H:%M:%S")} \t Time Gap {gap} seconds \t Distance {dist} meters \t Speed {speed}')
             previous = point
 
 for waypoint in gpx.waypoints:
