@@ -30,11 +30,3 @@ for track in gpx.tracks:
             speed = 3.6*dist/gap if gap > 0 else 0
             print(f'Coord: ({lat},{long})\t Elevation: {elevation} \t Time: {time.strftime("%H:%M:%S")} \t Time Gap {gap} seconds \t Distance {dist} meters \t Speed {speed}')
             previous = point
-
-for waypoint in gpx.waypoints:
-    print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')
-
-for route in gpx.routes:
-    print('Route:')
-    for point in route.points:
-        print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevtion}')
