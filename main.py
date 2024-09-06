@@ -2,6 +2,7 @@ import gpxpy
 import gpxpy.gpx
 import math
 from geopy import distance
+import pandas as pd
 
 def calculateDistance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
@@ -18,6 +19,8 @@ gpx_file = open('test.gpx', 'r')
 
 gpx = gpxpy.parse(gpx_file)
 
+rows = []
+
 for track in gpx.tracks:
     for segment in track.segments:
         if len(segment.points) == 0:
@@ -28,5 +31,8 @@ for track in gpx.tracks:
             dist = round(calculateDistance(previous, point), 5)
             gap = (time - previous.time).seconds
             speed = 3.6*dist/gap if gap > 0 else 0
+            rows.append([time, lat, long, elevation, dist, gap, speed])
             print(f'Coord: ({lat},{long})\t Elevation: {elevation} \t Time: {time.strftime("%H:%M:%S")} \t Time Gap {gap} seconds \t Distance {dist} meters \t Speed {speed}')
             previous = point
+
+df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed"], data = rows)
