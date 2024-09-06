@@ -36,10 +36,11 @@ for track in gpx.tracks:
             speed = 3.6*dist/gap if gap > 0 else 0
             accumulated_distance += dist
             accumulated_time = time - first_time
-            rows.append([time, lat, long, elevation, dist, gap, speed, accumulated_distance, accumulated_time])
+            avg_speed = 3.6*accumulated_distance/accumulated_time.seconds if accumulated_time.seconds > 0 else 0
+            rows.append([time, lat, long, elevation, dist, gap, speed, avg_speed, accumulated_distance, accumulated_time])
             previous = point
 
-df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed", "Tot Distance", "Tot. Time"], data = rows)
+df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed", "Avg Speed", "Tot Distance", "Tot. Time"], data = rows)
 df["KM"] = (df["Tot Distance"]/100).astype(int)/10
 df = df.groupby(["KM"],as_index=False).last()
-print(df)
+print(df[["KM", "Tot Distance", "Tot. Time", "Speed", "Avg Speed"]])
