@@ -11,7 +11,7 @@ gpx = gpxpy.parse(gpx_file)
 for track in gpx.tracks:
     for segment in track.segments:
         for point in segment.points:
-                print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation}')
+                print(f'Point at ({point.latitude},{point.longitude}) -> {point.elevation} on time {point.time}')
 
 for waypoint in gpx.waypoints:
     print(f'waypoint {waypoint.name} -> ({waypoint.latitude},{waypoint.longitude})')
