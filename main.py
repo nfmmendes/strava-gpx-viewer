@@ -21,18 +21,25 @@ gpx = gpxpy.parse(gpx_file)
 
 rows = []
 
+accumulated_distance = 0
+
 for track in gpx.tracks:
     for segment in track.segments:
         if len(segment.points) == 0:
             continue
         previous = segment.points[0]
+        first_time = segment.points[0].time
         for point in segment.points:
             lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
             dist = round(calculateDistance(previous, point), 5)
             gap = (time - previous.time).seconds
             speed = 3.6*dist/gap if gap > 0 else 0
-            rows.append([time, lat, long, elevation, dist, gap, speed])
-            print(f'Coord: ({lat},{long})\t Elevation: {elevation} \t Time: {time.strftime("%H:%M:%S")} \t Time Gap {gap} seconds \t Distance {dist} meters \t Speed {speed}')
+            accumulated_distance += dist
+            accumulated_time = time - first_time
+            rows.append([time, lat, long, elevation, dist, gap, speed, accumulated_distance, accumulated_time])
             previous = point
 
-df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed"], data = rows)
+df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed", "Tot Distance", "Tot. Time"], data = rows)
+df["KM"] = (df["Tot Distance"]/100).astype(int)/10
+df = df.groupby(["KM"],as_index=False).last()
+print(df)
