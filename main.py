@@ -3,6 +3,7 @@ import gpxpy.gpx
 import math
 from geopy import distance
 import pandas as pd
+import numpy as np
 
 def calculateDistance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
@@ -21,26 +22,32 @@ gpx = gpxpy.parse(gpx_file)
 
 rows = []
 
-accumulated_distance = 0
+def getDataFrameFromGpxFile(): 
 
-for track in gpx.tracks:
-    for segment in track.segments:
-        if len(segment.points) == 0:
-            continue
-        previous = segment.points[0]
-        first_time = segment.points[0].time
-        for point in segment.points:
-            lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
-            dist = round(calculateDistance(previous, point), 5)
-            gap = (time - previous.time).seconds
-            speed = 3.6*dist/gap if gap > 0 else 0
-            accumulated_distance += dist
-            accumulated_time = time - first_time
-            avg_speed = 3.6*accumulated_distance/accumulated_time.seconds if accumulated_time.seconds > 0 else 0
-            rows.append([time, lat, long, elevation, dist, gap, speed, avg_speed, accumulated_distance, accumulated_time])
-            previous = point
+    accumulated_distance = 0
+    for track in gpx.tracks:
+        for segment in track.segments:
+            if len(segment.points) == 0:
+                continue
+            previous = segment.points[0]
+            first_time = segment.points[0].time
+            for point in segment.points:
+                lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
+                dist = round(calculateDistance(previous, point), 5)
+                gap = (time - previous.time).seconds
+                accumulated_distance += dist        
+                accumulated_time = time - first_time
+                rows.append([time, lat, long, elevation, dist, gap, accumulated_distance, accumulated_time])
+                previous = point
+            
+    return pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta Time", "Tot. Distance", "Tot. Time"], data=rows)
+    
+df = getDataFrameFromGpxFile()
 
-df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta time", "Speed", "Avg Speed", "Tot Distance", "Tot. Time"], data = rows)
-df["KM"] = (df["Tot Distance"]/100).astype(int)/10
+print(df["Tot. Time"].dtype)
+df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
+df["Avg Speed"] = np.where(df["Tot. Time"].dt.total_seconds() > 0, 3.6*df["Tot. Distance"]/df["Tot. Time"].dt.total_seconds(), 0)
+df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
+
 df = df.groupby(["KM"],as_index=False).last()
-print(df[["KM", "Tot Distance", "Tot. Time", "Speed", "Avg Speed"]])
+print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
