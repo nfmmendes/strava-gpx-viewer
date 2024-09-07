@@ -1,3 +1,4 @@
 gpxpy
 geopy
 pandas
+matplotlib
