@@ -4,6 +4,7 @@ import math
 from geopy import distance
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 def calculateDistance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
@@ -57,3 +58,7 @@ calculateSpeedDataFrame(df)
 
 df = df.groupby(["KM"],as_index=False).last()
 print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
+plt.plot(df["KM"], df["Avg Speed"])
+plt.plot(df["KM"], df["Speed"])
+plt.show()
+
