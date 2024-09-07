@@ -46,7 +46,6 @@ def calculateSpeedDataFrame(df):
 
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
 
-    print(df["Tot. Time"].dtype)
     df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
