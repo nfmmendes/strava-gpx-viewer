@@ -41,15 +41,19 @@ def getDataFrameFromGpxFile():
                 previous = point
             
     return pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta Time", "Tot. Distance", "Tot. Time"], data=rows)
-    
+
+def calculateSpeedDataFrame(df):
+
+    toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
+
+    print(df["Tot. Time"].dtype)
+    df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
+    df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
+    df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
+
+
 df = getDataFrameFromGpxFile()
-
-toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
-
-print(df["Tot. Time"].dtype)
-df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
-df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
-df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
+calculateSpeedDataFrame(df)
 
 df = df.groupby(["KM"],as_index=False).last()
 print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
