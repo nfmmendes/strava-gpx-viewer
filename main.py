@@ -59,7 +59,10 @@ calculateSpeedDataFrame(df)
 
 df = df.groupby(["KM"],as_index=False).last()
 print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
-plt.plot(df["KM"], df["Avg Speed"])
-plt.plot(df["KM"], df["Speed ma"])
+plt.plot(df["KM"], df["Avg Speed"], label="Average speed")
+plt.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
+plt.legend(loc="upper left")
+plt.xlabel("Accumulated distance")
+plt.ylabel("Km/h")
 plt.show()
 
