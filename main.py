@@ -16,15 +16,16 @@ def calculateDistance(a, b):
 # Parsing an existing file:
 # -------------------------
 
-gpx_file = open('test.gpx', 'r')
 
-gpx = gpxpy.parse(gpx_file)
 
-rows = []
 
 def getDataFrameFromGpxFile(): 
-
+    
+    gpx_file = open('test.gpx', 'r')
+    gpx = gpxpy.parse(gpx_file)
+    rows = []
     accumulated_distance = 0
+    
     for track in gpx.tracks:
         for segment in track.segments:
             if len(segment.points) == 0:
