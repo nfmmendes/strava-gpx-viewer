@@ -53,16 +53,26 @@ def calculateSpeedDataFrame(df):
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
 
+def plotSpeed(df):
+    plt.plot(df["KM"], df["Avg Speed"], label="Average speed")
+    plt.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
+    plt.legend(loc="upper left")
+    plt.xlabel("Accumulated distance")
+    plt.ylabel("Km/h")
+    plt.show()
+
+def plotDistanceOverTime(df):
+    plt.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
+    plt.xlabel("Time")
+    plt.ylabel("Distance")
+    plt.show()
 
 df = getDataFrameFromGpxFile()
 calculateSpeedDataFrame(df)
 
-df = df.groupby(["KM"],as_index=False).last()
-print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
-plt.plot(df["KM"], df["Avg Speed"], label="Average speed")
-plt.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
-plt.legend(loc="upper left")
-plt.xlabel("Accumulated distance")
-plt.ylabel("Km/h")
-plt.show()
+summarized_df = df.groupby(["KM"],as_index=False).last()
+print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
+
+plotSpeed(df)
+plotDistanceOverTime(df)
 
