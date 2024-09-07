@@ -49,6 +49,7 @@ def calculateSpeedDataFrame(df):
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
 
     df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
+    df["Speed ma"] = df["Speed"].rolling(20).mean()
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
 
@@ -59,6 +60,6 @@ calculateSpeedDataFrame(df)
 df = df.groupby(["KM"],as_index=False).last()
 print(df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 plt.plot(df["KM"], df["Avg Speed"])
-plt.plot(df["KM"], df["Speed"])
+plt.plot(df["KM"], df["Speed ma"])
 plt.show()
 
