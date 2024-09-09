@@ -2,3 +2,4 @@ gpxpy
 geopy
 pandas
 matplotlib
+pyqt6
