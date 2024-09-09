@@ -6,6 +6,14 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+### For embedding in Qt
+from matplotlib.backends.backend_qtagg import FigureCanvas
+from matplotlib.backends.backend_qtagg import \
+    NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.qt_compat import QtWidgets
+from matplotlib.figure import Figure
+
 def calculateDistance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
     p2 = (b.latitude, b.longitude, b.elevation)
@@ -14,11 +22,10 @@ def calculateDistance(a, b):
 
     return math.sqrt(flat_distance**2 + (p2[2] - p1[2])**2)
 
+
+
 # Parsing an existing file:
 # -------------------------
-
-
-
 
 def getDataFrameFromGpxFile(): 
     
@@ -76,3 +83,25 @@ print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 plotSpeed(df)
 plotDistanceOverTime(df)
 
+
+
+class ApplicationWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self._main = QtWidgets.QWidget()
+        self.setCentralWidget(self._main)
+        layout = QtWidgets.QVBoxLayout(self._main)
+
+if __name__ == "__main__":
+    # Check whether there is already a running QApplication (e.g., if running
+    # from an IDE).
+    qapp = QtWidgets.QApplication.instance()
+    
+    if not qapp:
+        qapp = QtWidgets.QApplication(sys.argv)
+
+    app = ApplicationWindow()
+    app.show()
+    app.activateWindow()
+    app.raise_()
+    qapp.exec()
