@@ -5,6 +5,7 @@ from geopy import distance
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 
 ### For embedding in Qt
@@ -60,19 +61,6 @@ def calculateSpeedDataFrame(df):
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
 
-def plotSpeed(df):
-    plt.plot(df["KM"], df["Avg Speed"], label="Average speed")
-    plt.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
-    plt.legend(loc="upper left")
-    plt.xlabel("Accumulated distance")
-    plt.ylabel("Km/h")
-    plt.show()
-
-def plotDistanceOverTime(df):
-    plt.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
-    plt.xlabel("Time")
-    plt.ylabel("Distance")
-    plt.show()
 
 df = getDataFrameFromGpxFile()
 calculateSpeedDataFrame(df)
@@ -80,17 +68,48 @@ calculateSpeedDataFrame(df)
 summarized_df = df.groupby(["KM"],as_index=False).last()
 print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 
-plotSpeed(df)
-plotDistanceOverTime(df)
-
-
-
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
+
+        speed_chart_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        # Ideally one would use self.addToolBar here, but it is slightly
+        # incompatible between PyQt6 and other bindings, so we just add the
+        # toolbar as a plain widget instead.
+        layout.addWidget(NavigationToolbar(speed_chart_canvas, self))
+        layout.addWidget(speed_chart_canvas)
+  
+        self._speed_chart = speed_chart_canvas.figure.subplots()
+        self.plotSpeed(self._speed_chart, df)
+
+
+        distance_time_chart_canvas = FigureCanvas(Figure(figsize=(5, 3)))
+        # Ideally one would use self.addToolBar here, but it is slightly
+        # incompatible between PyQt6 and other bindings, so we just add the
+        # toolbar as a plain widget instead.
+        layout.addWidget(NavigationToolbar(distance_time_chart_canvas, self))
+        layout.addWidget(distance_time_chart_canvas)
+  
+        self._distance_time_chart = distance_time_chart_canvas.figure.subplots()
+        self.plotDistanceOverTime(self._distance_time_chart, df)
+
+
+    def plotSpeed(self, chart, df):
+        chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
+        chart.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
+        chart.legend(loc="upper left")
+        chart.set_xlabel("Accumulated distance")
+        chart.set_ylabel("Km/h")
+
+    def plotDistanceOverTime(self, chart, df):
+        chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
+        chart.set_xlabel("Time")
+        chart.set_ylabel("Distance")
+
+
 
 if __name__ == "__main__":
     # Check whether there is already a running QApplication (e.g., if running
