@@ -26,9 +26,9 @@ def calculateDistance(a, b):
 # Parsing an existing file:
 # -------------------------
 
-def getDataFrameFromGpxFile(): 
+def getDataFrameFromGpxFile(file_name): 
     
-    gpx_file = open('test.gpx', 'r')
+    gpx_file = open(file_name, 'r')
     gpx = gpxpy.parse(gpx_file)
     rows = []
     accumulated_distance = 0
