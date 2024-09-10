@@ -38,7 +38,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         layout.addWidget(NavigationToolbar(distance_time_chart_canvas, self))
         layout.addWidget(distance_time_chart_canvas)
-  
+ 
+        self.showMaximized()
 
     def plotSpeed(self, chart, df):
         chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
