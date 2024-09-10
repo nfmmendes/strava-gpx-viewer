@@ -59,11 +59,3 @@ def calculateSpeedDataFrame(df):
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
 
-
-df = getDataFrameFromGpxFile()
-calculateSpeedDataFrame(df)
-
-summarized_df = df.groupby(["KM"],as_index=False).last()
-print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
-
-
