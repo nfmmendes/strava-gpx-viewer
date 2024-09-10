@@ -24,27 +24,21 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         summarized_df = df.groupby(["KM"],as_index=False).last()
         #print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 
-        speed_chart_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        # Ideally one would use self.addToolBar here, but it is slightly
-        # incompatible between PyQt6 and other bindings, so we just add the
-        # toolbar as a plain widget instead.
-        layout.addWidget(NavigationToolbar(speed_chart_canvas, self))
-        layout.addWidget(speed_chart_canvas)
-  
+        speed_chart_canvas = FigureCanvas(Figure(figsize=(12, 6.5)))
         self._speed_chart = speed_chart_canvas.figure.subplots()
         self.plotSpeed(self._speed_chart, df)
-
-
-        distance_time_chart_canvas = FigureCanvas(Figure(figsize=(5, 3)))
-        # Ideally one would use self.addToolBar here, but it is slightly
-        # incompatible between PyQt6 and other bindings, so we just add the
-        # toolbar as a plain widget instead.
+        speed_chart_canvas.figure.subplots_adjust(bottom=0.15, top=0.95)
+        
+        distance_time_chart_canvas = FigureCanvas(Figure(figsize=(12, 6.5)))
+        self._distance_time_chart = distance_time_chart_canvas.figure.subplots()
+        self.plotDistanceOverTime(self._distance_time_chart, df)
+        
+        layout.addWidget(NavigationToolbar(speed_chart_canvas, self))
+        layout.addWidget(speed_chart_canvas)
+        
         layout.addWidget(NavigationToolbar(distance_time_chart_canvas, self))
         layout.addWidget(distance_time_chart_canvas)
   
-        self._distance_time_chart = distance_time_chart_canvas.figure.subplots()
-        self.plotDistanceOverTime(self._distance_time_chart, df)
-
 
     def plotSpeed(self, chart, df):
         chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
