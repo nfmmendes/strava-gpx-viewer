@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qtagg import \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
-from PyQt6.QtWidgets import QPushButton, QFileDialog
+from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QFileDialog, QGridLayout
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -29,7 +29,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._open_file_button.setFixedSize(100, 32)
         self._open_file_button.clicked.connect(self.openFileDialog)
 
+        self._total_distance_label = QLabel("")
+        self._total_time_label = QLabel("")
+        self._average_speed_label = QLabel("")
+        self._total_elevation_label = QLabel("")
+
+        stats_grid_layout = QGridLayout()
+        stats_grid_layout.addWidget(QLabel("Total distance: "), 0, 0)
+        stats_grid_layout.addWidget(self._total_distance_label, 0, 1)
+        stats_grid_layout.addWidget(QLabel("Total time: "), 1, 0)
+        stats_grid_layout.addWidget(self._total_time_label, 1, 1)
+        stats_grid_layout.addWidget(QLabel("Average speed: "), 2, 0)
+        stats_grid_layout.addWidget(self._average_speed_label, 2, 1)
+        stats_grid_layout.addWidget(QLabel("Elevation: "), 3, 0)
+        stats_grid_layout.addWidget(self._total_elevation_label, 3, 1)
+
         layout.addWidget(self._open_file_button)
+        layout.addLayout(stats_grid_layout)
         layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self))
         layout.addWidget(self._speed_chart_canvas)
         
@@ -45,8 +61,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if len(fname) > 1: 
             df = getDataFrameFromGpxFile(fname[0])
             calculateSpeedDataFrame(df)
+            self.initializeStats(df)
             self.initializeCharts(df)
 
+    def initializeStats(self, df):
+        self._total_distance_label.setText(str(df.iloc[-1]["Tot. Distance"]))
+        self._total_time_label.setText(str(df.iloc[-1]["Tot. Time"]))
+        self._average_speed_label.setText(str(df.iloc[-1]["Avg Speed"]))
+        self._total_elevation_label.setText(str(df["Elevation"].sum()))
+        QApplication.processEvents()
 
     def plotSpeed(self, chart, df):
         chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
