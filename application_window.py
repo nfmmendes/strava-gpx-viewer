@@ -22,9 +22,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         #summarized_df = df.groupby(["KM"],as_index=False).last()
         #print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 
-        self._speed_chart_canvas = FigureCanvas(Figure(figsize=(12, 3.2)))
-        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(6, 3.2)))
-        self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(6, 3.2)))
+        self._speed_chart_canvas = FigureCanvas(Figure(figsize=(14, 3.2)))
+        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
+        self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
@@ -78,9 +78,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def plotSpeed(self, chart, df):
         chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
         plot, = chart.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
-        chart.legend(loc="upper left")
+        chart.legend(loc="lower left")
         chart.set_xlabel("Accumulated distance")
         chart.set_ylabel("Km/h")
+
+        # Clean elevation grade data
+        summarized_df = df[["KM", "Elevation Gain", "Distance"]].rolling(20).mean()
+        grade_threshold = 0.5
+        while len(summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) > grade_threshold]) < 15:
+            grade_threshold = grade_threshold - 0.02 
+        cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
+        
+        
+        ax2 = chart.twinx()
+        ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], color="#334455")
+        ax2.set_ylabel("Grade")
+        ax2.legend(["Grade %"], loc="upper right")
+
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
