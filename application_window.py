@@ -68,7 +68,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._total_distance_label.setText(str(df.iloc[-1]["Tot. Distance"]))
         self._total_time_label.setText(str(df.iloc[-1]["Tot. Time"]))
         self._average_speed_label.setText(str(df.iloc[-1]["Avg Speed"]))
-        self._total_elevation_label.setText(str(df["Elevation"].sum()))
+        self._total_elevation_label.setText(str(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum()))
         QApplication.processEvents()
 
     def plotSpeed(self, chart, df):

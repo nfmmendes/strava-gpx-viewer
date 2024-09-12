@@ -42,18 +42,20 @@ def getDataFrameFromGpxFile(file_name):
             for point in segment.points:
                 lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
                 dist = round(calculateDistance(previous, point), 5)
-                gap = (time - previous.time).seconds
                 accumulated_distance += dist        
                 accumulated_time = time - first_time
-                rows.append([time, lat, long, elevation, dist, gap, accumulated_distance, accumulated_time])
+                rows.append([time, lat, long, elevation, dist, accumulated_distance, accumulated_time])
                 previous = point
             
-    return pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Delta Time", "Tot. Distance", "Tot. Time"], data=rows)
+    return pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Tot. Distance", "Tot. Time"], data=rows)
 
 def calculateSpeedDataFrame(df):
 
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
-
+    df["Delta Time"] = toSeconds(df["Time"].diff())
+    df.at[0, "Delta Time"] = 0
+    df["Elevation Gain"] = df["Elevation"].diff()
+    df.at[0, "Elevation Gain"] = 0
     df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
     df["Speed ma"] = df["Speed"].rolling(20).mean()
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
