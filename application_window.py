@@ -23,7 +23,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         #print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 
         self._speed_chart_canvas = FigureCanvas(Figure(figsize=(12, 3.2)))
-        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(12, 3.2)))
+        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(6, 3.2)))
+        self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(6, 3.2)))
 
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
@@ -44,14 +45,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         stats_grid_layout.addWidget(QLabel("Elevation: "), 3, 0)
         stats_grid_layout.addWidget(self._total_elevation_label, 3, 1)
 
+        bottom_charts = QtWidgets.QGridLayout()
+        bottom_charts.addWidget(NavigationToolbar(self._elevation_distance_chart_canvas, self), 0, 0) 
+        bottom_charts.addWidget(self._elevation_distance_chart_canvas, 1, 0)
+        bottom_charts.addWidget(NavigationToolbar(self._distance_time_chart_canvas, self), 0, 1)
+        bottom_charts.addWidget(self._distance_time_chart_canvas, 1, 1)
+        
         layout.addWidget(self._open_file_button)
-        layout.addLayout(stats_grid_layout)
+        layout.addLayout(stats_grid_layout) 
         layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self))
         layout.addWidget(self._speed_chart_canvas)
-        
-        layout.addWidget(NavigationToolbar(self._distance_time_chart_canvas, self))
-        layout.addWidget(self._distance_time_chart_canvas)
- 
+        layout.addLayout(bottom_charts) 
         self.showMaximized()
 
     def openFileDialog(self):
@@ -87,13 +91,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._distance_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
+    def plotElevationOverDistance(self, chart, df):
+        plot, = chart.plot(df["KM"], df["Elevation"])
+        chart.set_xlabel("Distance")
+        chart.set_ylabel("Elevation")
+        self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+        plot.figure.canvas.draw()
+
     def initializeCharts(self, df):
         self._speed_chart = self._speed_chart_canvas.figure.subplots()
         self.plotSpeed(self._speed_chart, df)
         
         self._distance_time_chart = self._distance_time_chart_canvas.figure.subplots()
         self.plotDistanceOverTime(self._distance_time_chart, df)
-       
+        
+        self._elevation_distance_chart = self._elevation_distance_chart_canvas.figure.subplots()
+        self.plotElevationOverDistance(self._elevation_distance_chart, df)
+
 
 
 
