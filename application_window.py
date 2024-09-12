@@ -22,8 +22,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         #summarized_df = df.groupby(["KM"],as_index=False).last()
         #print(summarized_df[["KM", "Tot. Distance", "Tot. Time", "Speed", "Avg Speed"]])
 
-        self._speed_chart_canvas = FigureCanvas(Figure(figsize=(12, 6.5)))
-        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(12, 6.5)))
+        self._speed_chart_canvas = FigureCanvas(Figure(figsize=(12, 3.2)))
+        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(12, 3.2)))
 
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
@@ -65,10 +65,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.initializeCharts(df)
 
     def initializeStats(self, df):
-        self._total_distance_label.setText(str(df.iloc[-1]["Tot. Distance"]))
+        self._total_distance_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
         self._total_time_label.setText(str(df.iloc[-1]["Tot. Time"]))
-        self._average_speed_label.setText(str(df.iloc[-1]["Avg Speed"]))
-        self._total_elevation_label.setText(str(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum()))
+        self._average_speed_label.setText(str(round(df.iloc[-1]["Avg Speed"], 2)))
+        self._total_elevation_label.setText(str(round(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum(),2)))
         QApplication.processEvents()
 
     def plotSpeed(self, chart, df):
@@ -77,18 +77,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         chart.legend(loc="upper left")
         chart.set_xlabel("Accumulated distance")
         chart.set_ylabel("Km/h")
+        self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
     def plotDistanceOverTime(self, chart, df):
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
         chart.set_xlabel("Time")
         chart.set_ylabel("Distance")
+        self._distance_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
     def initializeCharts(self, df):
         self._speed_chart = self._speed_chart_canvas.figure.subplots()
         self.plotSpeed(self._speed_chart, df)
-        self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, top=0.95)
         
         self._distance_time_chart = self._distance_time_chart_canvas.figure.subplots()
         self.plotDistanceOverTime(self._distance_time_chart, df)
