@@ -47,7 +47,13 @@ def getDataFrameFromGpxFile(file_name):
                 rows.append([time, lat, long, elevation, dist, accumulated_distance, accumulated_time])
                 previous = point
             
-    return pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Tot. Distance", "Tot. Time"], data=rows)
+    df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Tot. Distance", "Tot. Time"], data=rows)
+    df["Delta Time"] = df["Time"].diff().dt.total_seconds()
+    df.at[0, "Delta Time"] = 0
+    df["Elevation Gain"] = df["Elevation"].diff()
+    df.at[0, "Elevation Gain"] = 0
+
+    return df
 
 def calculateSpeedDataFrame(df):
 
