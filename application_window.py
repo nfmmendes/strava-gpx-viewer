@@ -5,11 +5,7 @@ from gpx_processor import getDataFrameFromGpxFile
 from gpx_processor import calculateSpeedDataFrame
 
 ### For embedding in Qt
-from matplotlib.backends.backend_qtagg import FigureCanvas
-from matplotlib.backends.backend_qtagg import \
-    NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.qt_compat import QtWidgets
-from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QFileDialog, QGridLayout
 from chart_dashboard import ChartDashboard
 
