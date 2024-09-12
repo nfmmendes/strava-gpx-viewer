@@ -76,11 +76,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         QApplication.processEvents()
 
     def plotSpeed(self, chart, df):
-        chart.plot(df["KM"], df["Avg Speed"], label="Average speed")
-        plot, = chart.plot(df["KM"], df["Speed ma"], label="Instantaneous speed")
+        chart.plot(df["KM"], df["Avg Speed"], label="average")
+        plot, = chart.plot(df["KM"], df["Speed ma"], label="instantaneous")
         chart.legend(loc="lower left")
-        chart.set_xlabel("Accumulated distance")
-        chart.set_ylabel("Km/h")
+        chart.set_xlabel("Accumulated distance (Km)")
+        chart.set_ylabel("Speed (Km/h)")
 
         # Clean elevation grade data
         summarized_df = df[["KM", "Elevation Gain", "Distance"]].rolling(20).mean()
@@ -91,24 +91,26 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         
         ax2 = chart.twinx()
-        ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], color="#334455")
+        ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
+                 color="#334455", label="Grade")
         ax2.set_ylabel("Grade")
-        ax2.legend(["Grade %"], loc="upper right")
+        ax2.legend(loc="upper right")
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
     def plotDistanceOverTime(self, chart, df):
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
-        chart.set_xlabel("Time")
-        chart.set_ylabel("Distance")
+        chart.set_xlabel("Time (minutes)")
+        chart.set_ylabel("Distance (Km)")
+        chart.grid(color = 'green', linestyle = '--', linewidth = 0.5)
         self._distance_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
     def plotElevationOverDistance(self, chart, df):
         plot, = chart.plot(df["KM"], df["Elevation"])
-        chart.set_xlabel("Distance")
-        chart.set_ylabel("Elevation")
+        chart.set_xlabel("Distance (Km)")
+        chart.set_ylabel("Elevation (m)")
         self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
