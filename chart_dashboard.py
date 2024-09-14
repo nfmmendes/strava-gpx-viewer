@@ -64,7 +64,8 @@ class ChartDashboard(QtWidgets.QWidget):
         plot, = chart.plot(df["KM"], df["Elevation"])
         chart.set_xlabel("Distance (Km)")
         chart.set_ylabel("Elevation (m)")
-        self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+        self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15)
+        chart.fill_between(df["KM"], df["Elevation"])
         plot.figure.canvas.draw()
 
     def initializeCharts(self, df):
