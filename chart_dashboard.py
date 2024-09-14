@@ -18,15 +18,15 @@ class ChartDashboard(QtWidgets.QWidget):
         self._redraw = False
 
         self._speed_chart_canvas = FigureCanvas(Figure(figsize=(14, 3.2)))
-        self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
+        self._stats_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
         layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0, 1, 2)
         layout.addWidget(self._speed_chart_canvas, 1, 0, 1, 2)
         layout.addWidget(NavigationToolbar(self._elevation_distance_chart_canvas, self), 2, 0) 
         layout.addWidget(self._elevation_distance_chart_canvas, 3, 0) 
-        layout.addWidget(NavigationToolbar(self._distance_time_chart_canvas, self), 2, 1) 
-        layout.addWidget(self._distance_time_chart_canvas, 3, 1)
+        layout.addWidget(NavigationToolbar(self._stats_time_chart_canvas, self), 2, 1) 
+        layout.addWidget(self._stats_time_chart_canvas, 3, 1)
 
  
     def plotSpeed(self, df):
@@ -52,21 +52,29 @@ class ChartDashboard(QtWidgets.QWidget):
         ax2 = chart.twinx()
         ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
                  color="#334455", label="Grade")
-        ax2.set_ylabel("Grade")
+        ax2.set_ylabel("Grade (%)")
         ax2.legend(loc="upper right")
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
-    def plotDistanceOverTime(self, df):
-        self._distance_time_chart_canvas.figure.clf()
-        chart = self._distance_time_chart_canvas.figure.subplots()
+    def plotStatsOverTime(self, df):
+        self._stats_time_chart_canvas.figure.clf()
+        chart = self._stats_time_chart_canvas.figure.subplots()
 
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
         chart.set_xlabel("Time (minutes)")
         chart.set_ylabel("Distance (Km)")
         chart.grid(color = 'green', linestyle = '--', linewidth = 0.5)
-        self._distance_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+
+        ax2 = chart.twinx()
+        ax2.plot(df[df["Elevation Gain"] > 0]["Tot. Time"].dt.total_seconds()/60, 
+                 df[df["Elevation Gain"] > 0]["Elevation Gain"].cumsum(), 
+                 color="#334455", label="Elevation Gain")
+        ax2.set_ylabel("Elevation gain (m)")
+        ax2.legend(loc="lower right")
+
+        self._stats_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
     def plotElevationOverDistance(self, df):
@@ -83,5 +91,5 @@ class ChartDashboard(QtWidgets.QWidget):
 
     def initializeCharts(self, df):
         self.plotSpeed(df)
-        self.plotDistanceOverTime(df)
+        self.plotStatsOverTime(df)
         self.plotElevationOverDistance(df)
