@@ -35,7 +35,6 @@ class ChartDashboard(QtWidgets.QWidget):
 
         chart.plot(df["KM"], df["Avg Speed"], label="average")
         plot, = chart.plot(df["KM"], df["Speed ma"], label="instantaneous")
-        chart.legend(loc="lower left")
         chart.set_xlabel("Accumulated distance (Km)")
         chart.set_ylabel("Speed (Km/h)")
         chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
@@ -47,13 +46,15 @@ class ChartDashboard(QtWidgets.QWidget):
         while len(summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) > grade_threshold]) < 15:
             grade_threshold = grade_threshold - 0.02 
         cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
-        
-        
+ 
         ax2 = chart.twinx()
         ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
                  color="#334455", label="Grade")
         ax2.set_ylabel("Grade (%)")
-        ax2.legend(loc="upper right")
+
+        lines, labels = chart.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax2.legend(lines + lines2, labels + labels2, loc="upper right")
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
