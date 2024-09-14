@@ -15,6 +15,7 @@ class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         layout = QtWidgets.QGridLayout(self)
+        self._redraw = False
 
         self._speed_chart_canvas = FigureCanvas(Figure(figsize=(14, 3.2)))
         self._distance_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
@@ -28,7 +29,10 @@ class ChartDashboard(QtWidgets.QWidget):
         layout.addWidget(self._distance_time_chart_canvas, 3, 1)
 
  
-    def plotSpeed(self, chart, df):
+    def plotSpeed(self, df):
+        self._speed_chart_canvas.figure.clf()
+        chart = self._speed_chart_canvas.figure.subplots()
+
         chart.plot(df["KM"], df["Avg Speed"], label="average")
         plot, = chart.plot(df["KM"], df["Speed ma"], label="instantaneous")
         chart.legend(loc="lower left")
@@ -54,7 +58,10 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
-    def plotDistanceOverTime(self, chart, df):
+    def plotDistanceOverTime(self, df):
+        self._distance_time_chart_canvas.figure.clf()
+        chart = self._distance_time_chart_canvas.figure.subplots()
+
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
         chart.set_xlabel("Time (minutes)")
         chart.set_ylabel("Distance (Km)")
@@ -62,22 +69,19 @@ class ChartDashboard(QtWidgets.QWidget):
         self._distance_time_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         plot.figure.canvas.draw()
 
-    def plotElevationOverDistance(self, chart, df):
+    def plotElevationOverDistance(self, df):
+        self._elevation_distance_chart_canvas.figure.clf()
+        chart = self._elevation_distance_chart_canvas.figure.subplots()
+
         plot, = chart.plot(df["KM"], df["Elevation"])
         chart.set_xlabel("Distance (Km)")
         chart.set_ylabel("Elevation (m)")
         self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15)
         chart.fill_between(df["KM"], df["Elevation"])
+
         plot.figure.canvas.draw()
 
     def initializeCharts(self, df):
-        self._speed_chart = self._speed_chart_canvas.figure.subplots()
-        self.plotSpeed(self._speed_chart, df)
-        
-        self._distance_time_chart = self._distance_time_chart_canvas.figure.subplots()
-        self.plotDistanceOverTime(self._distance_time_chart, df)
-        
-        self._elevation_distance_chart = self._elevation_distance_chart_canvas.figure.subplots()
-        self.plotElevationOverDistance(self._elevation_distance_chart, df)
-
-
+        self.plotSpeed(df)
+        self.plotDistanceOverTime(df)
+        self.plotElevationOverDistance(df)
