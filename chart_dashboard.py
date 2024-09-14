@@ -34,6 +34,8 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.legend(loc="lower left")
         chart.set_xlabel("Accumulated distance (Km)")
         chart.set_ylabel("Speed (Km/h)")
+        chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
+        chart.fill_between(df["KM"], df["Speed ma"], alpha=0.3)
 
         # Clean elevation grade data
         summarized_df = df[["KM", "Elevation Gain", "Distance"]].rolling(20).mean()
