@@ -16,6 +16,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
 
+        self._export_to_pdf_button = QPushButton("Export to pdf")
+        self._export_to_pdf_button.setFixedSize(100, 32)
+        self._export_to_pdf_button.setVisible(False)
+
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
         self._open_file_button.clicked.connect(self.openFileDialog)
@@ -39,6 +43,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         layout.addWidget(self._open_file_button)
         layout.addLayout(stats_grid_layout) 
+        layout.addWidget(self._export_to_pdf_button)
         layout.addWidget(self._dashboard) 
         self.showMaximized()
 
@@ -51,6 +56,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             calculateSpeedDataFrame(df)
             self.initializeStats(df)
             self._dashboard.initializeCharts(df)
+
+        self._export_to_pdf_button.setVisible(True)
 
     def initializeStats(self, df):
         self._total_distance_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
