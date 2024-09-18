@@ -3,3 +3,4 @@ geopy
 pandas
 matplotlib
 pyqt6
+pdfkit
