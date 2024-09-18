@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from xhtml2pdf import pisa
 import matplotlib.pyplot as plt
 from gpx_processor import getDataFrameFromGpxFile
 from gpx_processor import calculateSpeedDataFrame
@@ -19,6 +20,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._export_to_pdf_button = QPushButton("Export to pdf")
         self._export_to_pdf_button.setFixedSize(100, 32)
         self._export_to_pdf_button.setVisible(False)
+        self._export_to_pdf_button.clicked.connect(self.exportReportToPdf)
 
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
@@ -47,15 +49,26 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         layout.addWidget(self._dashboard) 
         self.showMaximized()
 
+    def exportReportToPdf(self):
+        print("Export to pdf clicked")
+ 
+        result_file = open("out.pdf", "w+b")
+
+        # convert HTML to PDF
+        pisa_status = pisa.CreatePDF("<html> <body>" +  self._df.iloc[0:100].to_html() + "</body> </html>", dest=result_file)
+        result_file.close()  
+
+        return pisa_status.err
+
     def openFileDialog(self):
         fname = QFileDialog.getOpenFileName(self,"Open File", "",
                                             "GPX Files (*.gpx)",)
 
         if len(fname) > 1: 
-            df = getDataFrameFromGpxFile(fname[0])
-            calculateSpeedDataFrame(df)
-            self.initializeStats(df)
-            self._dashboard.initializeCharts(df)
+            self._df = getDataFrameFromGpxFile(fname[0])
+            calculateSpeedDataFrame(self._df)
+            self.initializeStats(self._df)
+            self._dashboard.initializeCharts(self._df)
 
         self._export_to_pdf_button.setVisible(True)
 
