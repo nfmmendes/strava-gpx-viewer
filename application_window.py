@@ -55,7 +55,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         result_file = open("out.pdf", "w+b")
 
         # convert HTML to PDF
-        pisa_status = pisa.CreatePDF("<html> <body>" +  self._df.iloc[0:100].to_html() + "</body> </html>", dest=result_file)
+        pisa_status = pisa.CreatePDF("<html> <body>" +  self._df.groupby(["KM"], as_index=False).last().to_html() +  "</body> </html>", dest=result_file)
         result_file.close()  
 
         return pisa_status.err
