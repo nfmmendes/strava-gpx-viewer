@@ -64,18 +64,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         return p_df.groupby(["KM"], as_index=False).last().to_html()
 
     def exportReportToPdf(self):
- 
-        result_file = open("out.pdf", "w+b")        
 
-        # convert HTML to PDF
-        pisa_status = pisa.CreatePDF("<html> <body><head><style> table.dataframe { font-weight: medium; }" + 
-                                     "table.dataframe tr { padding-top: 4px; height: 18px; } table.dataframe td { text-align: center; }" +
-                                     "</style></head>" +  
-                                     self.generateHtmlFromDataFrame(self._df) + 
-                                     "</body> </html>", dest=result_file)
-        result_file.close()  
+        try:
+            with open("out.pdf", "w+b") as file:        
+                try:
+                    # convert HTML to PDF
+                    pisa_status = pisa.CreatePDF("<html> <body><head><style> table.dataframe { font-weight: medium; }" + 
+                                                 "table.dataframe tr { padding-top: 4px; height: 18px; }" + 
+                                                 "table.dataframe td { text-align: center; }" +
+                                                 "</style></head>" +  
+                                                 self.generateHtmlFromDataFrame(self._df) + 
+                                                 "</body> </html>", dest=file)
+                    file.close()
+                    return pisa_status.err
+                except (IOError, OSError):
+                    print("Error writing to file")
+                    return "Error writing to file"
+        except (FileNotFoundError, PermissionError, OSError):
+            print("Error opening file")
+            return "Error opening file"
 
-        return pisa_status.err
+        return ""
 
     def openFileDialog(self):
         fname = QFileDialog.getOpenFileName(self,"Open File", "",
