@@ -49,27 +49,29 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         layout.addWidget(self._dashboard) 
         self.showMaximized()
 
-    def exportReportToPdf(self):
-        print("Export to pdf clicked")
- 
-        result_file = open("out.pdf", "w+b")
-
-        processed_df = self._df.drop(["Distance", "Elevation Gain", "Delta Time"], axis = 1)
-        processed_df["Time"] = processed_df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
-        processed_df["Tot. Distance"] = round(processed_df["Tot. Distance"], 2)
-        processed_df["Tot. Time"] = processed_df["Tot. Time"].apply(
-                    lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
+    def generateHtmlFromDataFrame(self, df):
+        p_df = df.drop(["Distance", "Elevation Gain", "Delta Time"], axis = 1)
+        p_df["Time"] = p_df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
+        p_df["Tot. Distance"] = round(p_df["Tot. Distance"], 2)
+        p_df["Tot. Time"] = p_df["Tot. Time"].apply(
+                lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
                                   if not pd.isnull(x) else ''
                                   )
-        processed_df["Speed"] = round(processed_df["Speed"], 2)
-        processed_df["Speed ma"] = round(processed_df["Speed ma"], 2)
-        processed_df["Avg Speed"] = round(processed_df["Avg Speed"], 2)
+        p_df["Speed"] = round(p_df["Speed"], 2)
+        p_df["Speed ma"] = round(p_df["Speed ma"], 2)
+        p_df["Avg Speed"] = round(p_df["Avg Speed"], 2)
+
+        return p_df.groupby(["KM"], as_index=False).last().to_html()
+
+    def exportReportToPdf(self):
+ 
+        result_file = open("out.pdf", "w+b")        
 
         # convert HTML to PDF
         pisa_status = pisa.CreatePDF("<html> <body><head><style> table.dataframe { font-weight: medium; }" + 
                                      "table.dataframe tr { padding-top: 4px; height: 18px; } table.dataframe td { text-align: center; }" +
                                      "</style></head>" +  
-                                     processed_df.groupby(["KM"], as_index=False).last().to_html() + 
+                                     self.generateHtmlFromDataFrame(self._df) + 
                                      "</body> </html>", dest=result_file)
         result_file.close()  
 
