@@ -54,8 +54,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
  
         result_file = open("out.pdf", "w+b")
 
+        processed_df = self._df.drop(["Distance", "Elevation Gain", "Delta Time"], axis = 1)
+        processed_df["Tot. Distance"] = round(processed_df["Tot. Distance"], 2)
+        processed_df["Speed"] = round(processed_df["Speed"], 2)
+        processed_df["Speed ma"] = round(processed_df["Speed ma"], 2)
+        processed_df["Avg Speed"] = round(processed_df["Avg Speed"], 2)
+
         # convert HTML to PDF
-        pisa_status = pisa.CreatePDF("<html> <body>" +  self._df.groupby(["KM"], as_index=False).last().to_html() +  "</body> </html>", dest=result_file)
+        pisa_status = pisa.CreatePDF("<html> <body>" +  
+                                     processed_df.groupby(["KM"], as_index=False).last().to_html() + 
+                                     "</body> </html>", dest=result_file)
         result_file.close()  
 
         return pisa_status.err
