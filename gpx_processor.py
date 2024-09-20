@@ -7,14 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-
-### For embedding in Qt
-from matplotlib.backends.backend_qtagg import FigureCanvas
-from matplotlib.backends.backend_qtagg import \
-    NavigationToolbar2QT as NavigationToolbar
-from matplotlib.backends.qt_compat import QtWidgets
-from matplotlib.figure import Figure
-
 def calculateDistance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
     p2 = (b.latitude, b.longitude, b.elevation)
