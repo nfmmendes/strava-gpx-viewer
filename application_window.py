@@ -17,6 +17,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
 
+        self.setStyleSheet(".stats-title { font-weight: bold; }") 
+
         self._export_to_pdf_button = QPushButton("Export to pdf")
         self._export_to_pdf_button.setFixedSize(100, 32)
         self._export_to_pdf_button.setVisible(False)
@@ -26,20 +28,32 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._open_file_button.setFixedSize(100, 32)
         self._open_file_button.clicked.connect(self.openFileDialog)
 
-        self._total_distance_label = QLabel("")
-        self._total_time_label = QLabel("")
-        self._average_speed_label = QLabel("")
-        self._total_elevation_label = QLabel("")
+        self._total_distance_value_label = QLabel("")
+        self._total_time_value_label = QLabel("")
+        self._average_speed_value_label = QLabel("")
+        self._total_elevation_value_label = QLabel("")
        
+        total_distance_title_label = QLabel("Total distance: ")
+        total_distance_title_label.setProperty("class", "stats-title")
+
+        total_time_title_label = QLabel("Total time:")
+        total_time_title_label.setProperty("class", "stats-title")
+
+        average_speed_title_label = QLabel("Average speed:")
+        average_speed_title_label.setProperty("class", "stats-title")
+
+        total_elevation_title_label = QLabel("Elevation:")
+        total_elevation_title_label.setProperty("class", "stats-title")
+
         stats_grid_layout = QGridLayout()
-        stats_grid_layout.addWidget(QLabel("Total distance: "), 0, 0)
-        stats_grid_layout.addWidget(self._total_distance_label, 0, 1)
-        stats_grid_layout.addWidget(QLabel("Total time: "), 1, 0)
-        stats_grid_layout.addWidget(self._total_time_label, 1, 1)
-        stats_grid_layout.addWidget(QLabel("Average speed: "), 2, 0)
-        stats_grid_layout.addWidget(self._average_speed_label, 2, 1)
-        stats_grid_layout.addWidget(QLabel("Elevation: "), 3, 0)
-        stats_grid_layout.addWidget(self._total_elevation_label, 3, 1)
+        stats_grid_layout.addWidget(total_distance_title_label, 0, 0)
+        stats_grid_layout.addWidget(self._total_distance_value_label, 0, 1)
+        stats_grid_layout.addWidget(total_time_title_label, 1, 0)
+        stats_grid_layout.addWidget(self._total_time_value_label, 1, 1)
+        stats_grid_layout.addWidget(average_speed_title_label, 2, 0)
+        stats_grid_layout.addWidget(self._average_speed_value_label, 2, 1)
+        stats_grid_layout.addWidget(total_elevation_title_label, 3, 0)
+        stats_grid_layout.addWidget(self._total_elevation_value_label, 3, 1)
 
         self._dashboard = ChartDashboard()
 
@@ -99,8 +113,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._export_to_pdf_button.setVisible(True)
 
     def initializeStats(self, df):
-        self._total_distance_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
-        self._total_time_label.setText(str(df.iloc[-1]["Tot. Time"]))
-        self._average_speed_label.setText(str(round(df.iloc[-1]["Avg Speed"], 2)))
-        self._total_elevation_label.setText(str(round(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum(),2)))
+        self._total_distance_value_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
+        self._total_time_value_label.setText(str(df.iloc[-1]["Tot. Time"]))
+        self._average_speed_value_label.setText(str(round(df.iloc[-1]["Avg Speed"], 2)))
+        self._total_elevation_value_label.setText(str(round(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum(),2)))
         QApplication.processEvents()
