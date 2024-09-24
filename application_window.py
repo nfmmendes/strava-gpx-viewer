@@ -84,10 +84,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             with open("out.pdf", "w+b") as file:        
                 try:
                     # convert HTML to PDF
-                    pisa_status = pisa.CreatePDF("<html> <body><head><style> table.dataframe { font-weight: medium; }" + 
+                    pisa_status = pisa.CreatePDF("<html><head><style>" + 
+                                                 "table.dataframe { font-weight: medium; }" + 
                                                  "table.dataframe tr { padding-top: 4px; height: 18px; }" + 
                                                  "table.dataframe td { text-align: center; }" +
-                                                 "</style></head>" +  
+                                                 "</style></head>" + 
+                                                 "<body>" +  
+                                                 "<h2> Summarized data </h2>"+
+                                                 "<b>Last measurements before each 100 meters </b>" +
                                                  self.generateHtmlFromDataFrame(self._df) + 
                                                  "</body> </html>", dest=file)
                     file.close()
