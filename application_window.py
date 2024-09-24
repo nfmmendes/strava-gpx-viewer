@@ -89,7 +89,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                                  "table.dataframe tr { padding-top: 4px; height: 18px; }" + 
                                                  "table.dataframe td { text-align: center; }" +
                                                  "</style></head>" + 
-                                                 "<body>" +  
+                                                 "<body>" + 
+                                                 "<div>"+
+                                                 "<h2> Speed and grade over distance </h2>"+
+                                                 "<img src='speed_chart.png'></div>" +
+                                                 "<div>" + 
+                                                 "<h2> Elevation over distance </h2>" +
+                                                 "<img src='elevation_distance_chart.png'></div>" +
+                                                 "<div>" + 
+                                                 "<h2> Distance and elevation gain over time </h2>" +
+                                                 "<img src='time_stats_chart.png'></div>" +
                                                  "<h2> Summarized data </h2>"+
                                                  "<b>Last measurements before each 100 meters </b>" +
                                                  self.generateHtmlFromDataFrame(self._df) + 
