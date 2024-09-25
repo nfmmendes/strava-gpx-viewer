@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import datetime
 from xhtml2pdf import pisa
 import matplotlib.pyplot as plt
 from gpx_processor import getDataFrameFromGpxFile
@@ -29,11 +30,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._open_file_button.setFixedSize(100, 32)
         self._open_file_button.clicked.connect(self.openFileDialog)
 
+        self._start_time_value_label = QLabel("")
         self._total_distance_value_label = QLabel("")
         self._total_time_value_label = QLabel("")
         self._average_speed_value_label = QLabel("")
         self._total_elevation_value_label = QLabel("")
-       
+      
+        start_time_title_label = QLabel("Start time:")
+        start_time_title_label.setProperty("class", "stats-title")
+
         total_distance_title_label = QLabel("Total distance: ")
         total_distance_title_label.setProperty("class", "stats-title")
 
@@ -47,15 +52,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         total_elevation_title_label.setProperty("class", "stats-title")
 
         stats_grid_layout = QGridLayout()
-        stats_grid_layout.addWidget(total_distance_title_label, 0, 0)
-        stats_grid_layout.addWidget(self._total_distance_value_label, 0, 1)
-        stats_grid_layout.addWidget(total_time_title_label, 1, 0)
-        stats_grid_layout.addWidget(self._total_time_value_label, 1, 1)
-        stats_grid_layout.addWidget(average_speed_title_label, 2, 0)
-        stats_grid_layout.addWidget(self._average_speed_value_label, 2, 1)
-        stats_grid_layout.addWidget(total_elevation_title_label, 3, 0)
-        stats_grid_layout.addWidget(self._total_elevation_value_label, 3, 1)
-        stats_grid_layout.addWidget(self._export_to_pdf_button, 0, 2, 4, 4)
+        stats_grid_layout.addWidget(start_time_title_label, 0, 0)
+        stats_grid_layout.addWidget(self._start_time_value_label, 0, 1)
+        stats_grid_layout.addWidget(total_distance_title_label, 1, 0)
+        stats_grid_layout.addWidget(self._total_distance_value_label, 1, 1)
+        stats_grid_layout.addWidget(total_time_title_label, 2, 0)
+        stats_grid_layout.addWidget(self._total_time_value_label, 2, 1)
+        stats_grid_layout.addWidget(average_speed_title_label, 3, 0)
+        stats_grid_layout.addWidget(self._average_speed_value_label, 3, 1)
+        stats_grid_layout.addWidget(total_elevation_title_label, 4, 0)
+        stats_grid_layout.addWidget(self._total_elevation_value_label, 4, 1)
+        stats_grid_layout.addWidget(self._export_to_pdf_button, 0, 2, 4, 5)
 
         self._dashboard = ChartDashboard()
 
@@ -128,6 +135,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._export_to_pdf_button.setVisible(True)
 
     def initializeStats(self, df):
+        start_time = df.iloc[0]["Time"].to_pydatetime()
+        self._start_time_value_label.setText(start_time.strftime("%Y-%m-%d %H:%M:%S"))
         self._total_distance_value_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
         self._total_time_value_label.setText(str(df.iloc[-1]["Tot. Time"]))
         self._average_speed_value_label.setText(str(round(df.iloc[-1]["Avg Speed"], 2)))
