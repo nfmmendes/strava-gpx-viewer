@@ -136,9 +136,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def initializeStats(self, df):
         start_time = df.iloc[0]["Time"].to_pydatetime()
+        format_total_time = lambda x : f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
         self._start_time_value_label.setText(start_time.strftime("%Y-%m-%d %H:%M:%S"))
         self._total_distance_value_label.setText(str(round(df.iloc[-1]["Tot. Distance"]/1000,2)))
-        self._total_time_value_label.setText(str(df.iloc[-1]["Tot. Time"]))
+        self._total_time_value_label.setText(format_total_time(df.iloc[-1]["Tot. Time"]))
         self._average_speed_value_label.setText(str(round(df.iloc[-1]["Avg Speed"], 2)))
         self._total_elevation_value_label.setText(str(round(df[df["Elevation Gain"] > 0]["Elevation Gain"].sum(),2)))
         QApplication.processEvents()
