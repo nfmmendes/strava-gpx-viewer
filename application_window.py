@@ -99,6 +99,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                                  "<div>" + 
                                                  "<h2> Distance and elevation gain over time </h2>" +
                                                  "<img src='time_stats_chart.png'></div>" +
+                                                 "<pdf:nextpage>" +
                                                  "<h2> Summarized data </h2>"+
                                                  "<b>Last measurements before each 100 meters </b>" +
                                                  self.generateHtmlFromDataFrame(self._df) + 
