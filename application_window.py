@@ -55,13 +55,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         stats_grid_layout.addWidget(self._average_speed_value_label, 2, 1)
         stats_grid_layout.addWidget(total_elevation_title_label, 3, 0)
         stats_grid_layout.addWidget(self._total_elevation_value_label, 3, 1)
+        stats_grid_layout.addWidget(self._export_to_pdf_button, 0, 2, 4, 4)
 
         self._dashboard = ChartDashboard()
 
         layout.addWidget(self._open_file_button)
-        layout.addLayout(stats_grid_layout) 
-        layout.addWidget(self._export_to_pdf_button)
-        layout.addWidget(self._dashboard) 
+        layout.addLayout(stats_grid_layout, 0) 
+        layout.addWidget(self._dashboard, 1) 
         self.showMaximized()
 
     def generateHtmlFromDataFrame(self, df):
