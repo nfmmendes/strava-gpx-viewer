@@ -47,10 +47,10 @@ class PdfReportGenerator:
                 +  self.generateHtmlFromDataFrame(self._df) +  "</body> </html>"
 
 
-    def generate(self):
+    def generate(self, file_name):
 
         try:
-            with open("out.pdf", "w+b") as file:        
+            with open(file_name, "w+b") as file:        
                 try:
                     # convert HTML to PDF
                     pisa_status = pisa.CreatePDF(self.generateHtmlReport(), dest=file)
