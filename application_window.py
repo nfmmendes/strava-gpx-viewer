@@ -85,32 +85,34 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         return p_df.groupby(["KM"], as_index=False).last().to_html()
 
+    def generateHtmlReport(self, df):
+        return """<html><head><style>  
+        table.dataframe { font-weight: medium; } 
+        table.dataframe tr { padding-top: 4px; height: 18px; } 
+        table.dataframe td { text-align: center; }  
+        </style></head> 
+        <body> 
+        <div>
+        <h2> Speed and grade over distance </h2>
+        <img src='speed_chart.png'></div>
+        <div> 
+        <h2> Elevation over distance </h2>
+        <img src='elevation_distance_chart.png'></div>
+        <div> 
+        <h2> Distance and elevation gain over time </h2>
+        <img src='time_stats_chart.png'></div>
+        <pdf:nextpage>
+        <h2> Summarized data </h2>
+        <b>Last measurements before each 100 meters </b>""" \
+                +  self.generateHtmlFromDataFrame(self._df) +  "</body> </html>"
+
     def exportReportToPdf(self):
 
         try:
             with open("out.pdf", "w+b") as file:        
                 try:
                     # convert HTML to PDF
-                    pisa_status = pisa.CreatePDF("<html><head><style>" + 
-                                                 "table.dataframe { font-weight: medium; }" + 
-                                                 "table.dataframe tr { padding-top: 4px; height: 18px; }" + 
-                                                 "table.dataframe td { text-align: center; }" +
-                                                 "</style></head>" + 
-                                                 "<body>" + 
-                                                 "<div>"+
-                                                 "<h2> Speed and grade over distance </h2>"+
-                                                 "<img src='speed_chart.png'></div>" +
-                                                 "<div>" + 
-                                                 "<h2> Elevation over distance </h2>" +
-                                                 "<img src='elevation_distance_chart.png'></div>" +
-                                                 "<div>" + 
-                                                 "<h2> Distance and elevation gain over time </h2>" +
-                                                 "<img src='time_stats_chart.png'></div>" +
-                                                 "<pdf:nextpage>" +
-                                                 "<h2> Summarized data </h2>"+
-                                                 "<b>Last measurements before each 100 meters </b>" +
-                                                 self.generateHtmlFromDataFrame(self._df) + 
-                                                 "</body> </html>", dest=file)
+                    pisa_status = pisa.CreatePDF(self.generateHtmlReport(self._df), dest=file)
                     file.close()
                     return pisa_status.err
                 except (IOError, OSError):
