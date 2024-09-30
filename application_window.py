@@ -27,6 +27,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._export_to_pdf_button.setVisible(False)
         self._export_to_pdf_button.clicked.connect(self.exportReportToPdf)
 
+        self._show_data_table_button = QPushButton("Show data table")
+        self._show_data_table_button.setFixedSize(100, 32)
+        self._show_data_table_button.setVisible(False)
+        self._show_data_table_button.clicked.connect(self.showDataTable)
+
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
         self._open_file_button.clicked.connect(self.openFileDialog)
@@ -63,7 +68,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         stats_grid_layout.addWidget(self._average_speed_value_label, 3, 1)
         stats_grid_layout.addWidget(total_elevation_title_label, 4, 0)
         stats_grid_layout.addWidget(self._total_elevation_value_label, 4, 1)
-        stats_grid_layout.addWidget(self._export_to_pdf_button, 0, 2, 4, 5)
+        stats_grid_layout.addWidget(self._show_data_table_button, 0, 2, 4, 2)  
+        stats_grid_layout.addWidget(self._export_to_pdf_button, 2, 2, 4, 3)
 
         self._dashboard = ChartDashboard()
 
@@ -72,6 +78,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         layout.addWidget(self._dashboard, 1) 
         self.showMaximized()
 
+
+    def showDataTable(self):
+        print("Show data table clicked")
 
     def exportReportToPdf(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
@@ -89,6 +98,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.initializeStats(self._df)
             self._dashboard.initializeCharts(self._df)
 
+        self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)
 
     def initializeStats(self, df):
