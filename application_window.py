@@ -26,16 +26,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._export_to_pdf_button = QPushButton("Export to pdf")
         self._export_to_pdf_button.setFixedSize(100, 32)
         self._export_to_pdf_button.setVisible(False)
-        self._export_to_pdf_button.clicked.connect(self.exportReportToPdf)
+        self._export_to_pdf_button.clicked.connect(self.export_report_to_pdf)
 
         self._show_data_table_button = QPushButton("Show data table")
         self._show_data_table_button.setFixedSize(100, 32)
         self._show_data_table_button.setVisible(False)
-        self._show_data_table_button.clicked.connect(self.showDataTable)
+        self._show_data_table_button.clicked.connect(self.show_data_table)
 
         self._open_file_button = QPushButton("Open gpx file")
         self._open_file_button.setFixedSize(100, 32)
-        self._open_file_button.clicked.connect(self.openFileDialog)
+        self._open_file_button.clicked.connect(self.open_file_dialog)
 
         self._start_time_value_label = QLabel("")
         self._total_distance_value_label = QLabel("")
@@ -80,31 +80,31 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.showMaximized()
 
 
-    def showDataTable(self):
+    def show_data_table(self):
         print("Show data table clicked")
         self.data_table_viewer = DataTableViewer(self._df)
         self.data_table_viewer.show()
 
-    def exportReportToPdf(self):
+    def export_report_to_pdf(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
                                                             "Save File", "", "PDF Files(*.pdf)")
         if len(file_name) > 0:
             pdf_generator = PdfReportGenerator(self._df)
             pdf_generator.generate(file_name)
 
-    def openFileDialog(self):
+    def open_file_dialog(self):
         fname, _ = QFileDialog.getOpenFileName(self,"Open File", "","GPX Files (*.gpx)",)
         
         if len(fname) > 0: 
             self._df = getDataFrameFromGpxFile(fname)
             calculateSpeedDataFrame(self._df)
-            self.initializeStats(self._df)
+            self.initialize_stats(self._df)
             self._dashboard.initializeCharts(self._df)
 
         self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)
 
-    def initializeStats(self, df):
+    def initialize_stats(self, df):
         start_time = df.iloc[0]["Time"].to_pydatetime()
         format_total_time = lambda x : f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
         self._start_time_value_label.setText(start_time.strftime("%Y-%m-%d %H:%M:%S"))
