@@ -3,8 +3,6 @@ import numpy as np
 import datetime
 from xhtml2pdf import pisa
 import matplotlib.pyplot as plt
-from gpx_processor import getDataFrameFromGpxFile
-from gpx_processor import calculateSpeedDataFrame
 
 class PdfReportGenerator: 
 
