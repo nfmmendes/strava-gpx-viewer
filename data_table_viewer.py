@@ -14,8 +14,18 @@ class DataTableViewer(QWidget):
         self.resize(700, 700)
         self.setWindowTitle("Data table")
         self.layout = QVBoxLayout()
+        
+        data_frame["Time"] = data_frame["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
+        data_frame["Tot. Distance"] = round(data_frame["Tot. Distance"], 2)
+        data_frame["Tot. Time"] = data_frame["Tot. Time"].apply(
+                lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
+                                  if not pd.isnull(x) else ''
+                                  )
+        data_frame["Speed"] = round(data_frame["Speed"], 2)
+        data_frame["Speed ma"] = round(data_frame["Speed ma"], 2)
+        data_frame["Avg Speed"] = round(data_frame["Avg Speed"], 2)
 
-        model = PandasModel(data_frame)
+        model = PandasModel(data_frame.drop(columns=["Distance", "Elevation Gain", "Delta Time"], axis=1))
 
         view = QTableView()
         view.setModel(model)
