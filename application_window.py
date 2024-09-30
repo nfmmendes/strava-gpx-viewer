@@ -82,7 +82,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def showDataTable(self):
         print("Show data table clicked")
-        self.data_table_viewer = DataTableViewer()
+        self.data_table_viewer = DataTableViewer(self._df)
         self.data_table_viewer.show()
 
     def exportReportToPdf(self):
