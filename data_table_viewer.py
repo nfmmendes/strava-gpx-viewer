@@ -15,17 +15,19 @@ class DataTableViewer(QWidget):
         self.setWindowTitle("Data table")
         self.layout = QVBoxLayout()
         
-        data_frame["Time"] = data_frame["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
-        data_frame["Tot. Distance"] = round(data_frame["Tot. Distance"], 2)
-        data_frame["Tot. Time"] = data_frame["Tot. Time"].apply(
+        self._df = data_frame.copy(deep=True)
+
+        self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
+        self._df["Tot. Distance"] = round(self._df["Tot. Distance"], 2)
+        self._df["Tot. Time"] = self._df["Tot. Time"].apply(
                 lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
                                   if not pd.isnull(x) else ''
                                   )
-        data_frame["Speed"] = round(data_frame["Speed"], 2)
-        data_frame["Speed ma"] = round(data_frame["Speed ma"], 2)
-        data_frame["Avg Speed"] = round(data_frame["Avg Speed"], 2)
+        self._df["Speed"] = round(self._df["Speed"], 2)
+        self._df["Speed ma"] = round(self._df["Speed ma"], 2)
+        self._df["Avg Speed"] = round(self._df["Avg Speed"], 2)
 
-        model = PandasModel(data_frame.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
+        model = PandasModel(self._df.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
 
         view = QTableView()
         view.setModel(model)
