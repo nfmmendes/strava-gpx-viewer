@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 
 ### For embedding in Qt
-from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QVBoxLayout, QGridLayout
+from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QVBoxLayout, QFileDialog
 from PyQt6.QtGui import QWindow
 
 from pandas_model import PandasModel
@@ -44,4 +44,6 @@ class DataTableViewer(QWidget):
         self.setLayout(self.layout)
 
     def exportTableToExcel(self):
-        print("Export to excel")
+        file_name, _ = QFileDialog.getSaveFileName(self, "Export data frame", "", "Excel Files(*.xlsx)")
+        if file_name:
+            self._df.to_excel(file_name)
