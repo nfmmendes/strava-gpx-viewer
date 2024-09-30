@@ -25,12 +25,21 @@ class DataTableViewer(QWidget):
         data_frame["Speed ma"] = round(data_frame["Speed ma"], 2)
         data_frame["Avg Speed"] = round(data_frame["Avg Speed"], 2)
 
-        model = PandasModel(data_frame.drop(columns=["Distance", "Elevation Gain", "Delta Time"], axis=1))
+        model = PandasModel(data_frame.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
 
         view = QTableView()
         view.setModel(model)
         view.resize(800, 600)
 
+
+        self._export_to_excel_button = QPushButton("Export to excel")
+        self._export_to_excel_button.setFixedSize(100, 30)
+        self._export_to_excel_button.clicked.connect(self.exportTableToExcel)
+
         self.layout.addWidget(view)
+        self.layout.addWidget(self._export_to_excel_button)
 
         self.setLayout(self.layout)
+
+    def exportTableToExcel(self):
+        print("Export to excel")
