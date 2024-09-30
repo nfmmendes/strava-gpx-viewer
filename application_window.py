@@ -11,6 +11,7 @@ from gpx_processor import calculateSpeedDataFrame
 from matplotlib.backends.qt_compat import QtWidgets
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QFileDialog, QGridLayout
 from chart_dashboard import ChartDashboard
+from data_table_viewer import DataTableViewer
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -81,6 +82,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def showDataTable(self):
         print("Show data table clicked")
+        self.data_table_viewer = DataTableViewer()
+        self.data_table_viewer.show()
 
     def exportReportToPdf(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
