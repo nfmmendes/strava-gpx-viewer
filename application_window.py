@@ -4,8 +4,7 @@ import datetime
 from xhtml2pdf import pisa
 import matplotlib.pyplot as plt
 from pdf_report_generator  import PdfReportGenerator
-from gpx_processor import getDataFrameFromGpxFile
-from gpx_processor import calculateSpeedDataFrame
+from gpx_processor import get_data_frame_from_gpx_file, calculate_speed_data_frame
 
 ### For embedding in Qt
 from matplotlib.backends.qt_compat import QtWidgets
@@ -96,8 +95,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         fname, _ = QFileDialog.getOpenFileName(self,"Open File", "","GPX Files (*.gpx)",)
         
         if len(fname) > 0: 
-            self._df = getDataFrameFromGpxFile(fname)
-            calculateSpeedDataFrame(self._df)
+            self._df = get_data_frame_from_gpx_file(fname)
+            calculate_speed_data_frame(self._df)
             self.initialize_stats(self._df)
             self._dashboard.initializeCharts(self._df)
 

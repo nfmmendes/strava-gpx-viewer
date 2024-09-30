@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-def calculateDistance(a, b):
+def calculate_distance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
     p2 = (b.latitude, b.longitude, b.elevation)
 
@@ -18,7 +18,7 @@ def calculateDistance(a, b):
 # Parsing an existing file:
 # -------------------------
 
-def getDataFrameFromGpxFile(file_name): 
+def get_data_frame_from_gpx_file(file_name): 
     
     gpx_file = open(file_name, 'r')
     gpx = gpxpy.parse(gpx_file)
@@ -33,7 +33,7 @@ def getDataFrameFromGpxFile(file_name):
             first_time = segment.points[0].time
             for point in segment.points:
                 lat, long, elevation, time = point.latitude, point.longitude, point.elevation, point.time
-                dist = round(calculateDistance(previous, point), 5)
+                dist = round(calculate_distance(previous, point), 5)
                 accumulated_distance += dist        
                 accumulated_time = time - first_time
                 rows.append([time, lat, long, elevation, dist, accumulated_distance, accumulated_time])
@@ -47,7 +47,7 @@ def getDataFrameFromGpxFile(file_name):
 
     return df
 
-def calculateSpeedDataFrame(df):
+def calculate_speed_data_frame(df):
 
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
     df["Delta Time"] = toSeconds(df["Time"].diff())
