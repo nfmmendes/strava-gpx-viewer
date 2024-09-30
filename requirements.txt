@@ -4,3 +4,4 @@ pandas
 matplotlib
 pyqt6
 xhtml2pdf
+openpyxl
