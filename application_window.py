@@ -88,15 +88,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def exportReportToPdf(self):
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
                                                             "Save File", "", "PDF Files(*.pdf)")
-        if file_name:
+        if len(file_name) > 0:
             pdf_generator = PdfReportGenerator(self._df)
             pdf_generator.generate(file_name)
 
     def openFileDialog(self):
-        fname = QFileDialog.getOpenFileName(self,"Open File", "","GPX Files (*.gpx)",)
-
-        if len(fname) > 1: 
-            self._df = getDataFrameFromGpxFile(fname[0])
+        fname, _ = QFileDialog.getOpenFileName(self,"Open File", "","GPX Files (*.gpx)",)
+        
+        if len(fname) > 0: 
+            self._df = getDataFrameFromGpxFile(fname)
             calculateSpeedDataFrame(self._df)
             self.initializeStats(self._df)
             self._dashboard.initializeCharts(self._df)
