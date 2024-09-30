@@ -2,3 +2,4 @@
 *.gpx
 *~
 *chart.png
+__pycache__/
