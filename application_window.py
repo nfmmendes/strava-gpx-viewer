@@ -98,7 +98,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self._df = get_data_frame_from_gpx_file(fname)
             calculate_speed_data_frame(self._df)
             self.initialize_stats(self._df)
-            self._dashboard.initializeCharts(self._df)
+            self._dashboard.initialize_charts(self._df)
 
         self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)

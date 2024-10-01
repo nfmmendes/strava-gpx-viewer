@@ -29,7 +29,7 @@ class ChartDashboard(QtWidgets.QWidget):
         layout.addWidget(self._stats_time_chart_canvas, 3, 1)
 
  
-    def plotSpeed(self, df):
+    def plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
 
@@ -60,7 +60,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
         plot.figure.canvas.draw()
 
-    def plotStatsOverTime(self, df):
+    def plot_stats_over_time(self, df):
         self._stats_time_chart_canvas.figure.clf()
         chart = self._stats_time_chart_canvas.figure.subplots()
 
@@ -80,7 +80,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas.figure.savefig("./time_stats_chart.png")
         plot.figure.canvas.draw()
 
-    def plotElevationOverDistance(self, df):
+    def plot_elevation_over_distance(self, df):
         self._elevation_distance_chart_canvas.figure.clf()
         chart = self._elevation_distance_chart_canvas.figure.subplots()
 
@@ -93,7 +93,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
 
-    def initializeCharts(self, df):
-        self.plotSpeed(df)
-        self.plotStatsOverTime(df)
-        self.plotElevationOverDistance(df)
+    def initialize_charts(self, df):
+        self.plot_speed(df)
+        self.plot_stats_over_time(df)
+        self.plot_elevation_over_distance(df)
