@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import datetime
 from xhtml2pdf import pisa
 import matplotlib.pyplot as plt

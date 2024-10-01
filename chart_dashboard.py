@@ -1,6 +1,5 @@
 
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 ### For embedding in Qt
@@ -9,7 +8,7 @@ from matplotlib.backends.backend_qtagg import \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
-from PyQt6.QtWidgets import QApplication, QLabel, QGridLayout
+from PyQt6.QtWidgets import QGridLayout
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
