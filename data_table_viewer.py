@@ -13,7 +13,7 @@ from page_model import PageModel
 class DataTableViewer(QWidget):
     def __init__(self, data_frame):
         super().__init__()
-        self.resize(700, 700)
+        self.resize(1024, 720)
         self.setWindowTitle("Data table")
         self.layout = QVBoxLayout()
         
@@ -42,7 +42,7 @@ class DataTableViewer(QWidget):
 
         view = QTableView()
         view.setModel(self._page_model)
-        view.resize(800, 600)
+        view.resize(1024, 600)
 
         self._first_page_button = QPushButton("First")
         self._first_page_button.setFixedSize(100, 30)
