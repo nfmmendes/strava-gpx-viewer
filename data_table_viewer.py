@@ -59,9 +59,12 @@ class DataTableViewer(QWidget):
         self._export_to_excel_button.setFixedSize(100, 30)
         self._export_to_excel_button.clicked.connect(self.exportTableToExcel)
 
+        self._pagination_label = QLabel(f"Page {self._current_page + 1} of {self._number_of_pages}")
+
         pagination_buttons_layout = QHBoxLayout()
         pagination_buttons_layout.addWidget(self._first_page_button)
         pagination_buttons_layout.addWidget(self._previous_page_button)
+        pagination_buttons_layout.addWidget(self._pagination_label)
         pagination_buttons_layout.addWidget(self._next_page_button)
         pagination_buttons_layout.addWidget(self._last_page_button)
 
@@ -73,23 +76,25 @@ class DataTableViewer(QWidget):
 
     def go_to_first_page(self):
         self._current_page = 0
-        self.update_pagination_button_states()
+        self.render()
 
     def go_to_last_page(self):
         self._current_page = self._number_of_pages - 1
-        self.update_pagination_button_states()
+        self.render()
 
     def go_to_next_page(self):
         self._current_page = min(self._current_page + 1, self._number_of_pages - 1)
-        self.update_pagination_button_states()
+        self.render()
 
     def go_to_previous_page(self):
         self._current_page = max(0, self._current_page - 1)
-        self.update_pagination_button_states()
+        self.render()
 
-    def update_pagination_button_states(self):
+    def render(self):
         self._next_page_button.setEnabled(self._current_page < self._number_of_pages - 1)
         self._previous_page_button.setEnabled(self._current_page > 0)
+
+        self._pagination_label.setText(f"Page {self._current_page + 1} of {self._number_of_pages}")
 
     def exportTableToExcel(self):
         file_name, _ = QFileDialog.getSaveFileName(self, "Export data frame", "", "Excel Files(*.xlsx)")
