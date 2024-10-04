@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QVBoxLayou
 from PyQt6.QtGui import QWindow
 
 from pandas_model import PandasModel
+from page_model import PageModel
 
 class DataTableViewer(QWidget):
     def __init__(self, data_frame):
@@ -35,8 +36,12 @@ class DataTableViewer(QWidget):
 
         model = PandasModel(self._df.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
 
+        self._page_model = PageModel(self._page_size, self)
+        self._page_model.setSourceModel(model)
+        self._page_model.setCurrentPage(self._current_page)
+
         view = QTableView()
-        view.setModel(model)
+        view.setModel(self._page_model)
         view.resize(800, 600)
 
         self._first_page_button = QPushButton("First")
