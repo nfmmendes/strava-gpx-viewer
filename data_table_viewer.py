@@ -45,6 +45,7 @@ class DataTableViewer(QWidget):
         view.resize(1024, 600)
 
         self._page_size_combobox = QComboBox()
+        self._page_size_combobox.setFixedSize(100, 30)
         self._page_size_combobox.addItems(["50", "100", "200", "500", "1000"])
         self._page_size_combobox.currentIndexChanged.connect(self.page_size_changed)
 
@@ -78,6 +79,7 @@ class DataTableViewer(QWidget):
         pagination_buttons_layout.addWidget(self._last_page_button)
         pagination_buttons_layout.addStretch()
 
+        self.layout.addWidget(QLabel("Rows by page:"))
         self.layout.addWidget(self._page_size_combobox, 0)
         self.layout.addWidget(view)
         self.layout.addLayout(pagination_buttons_layout)
