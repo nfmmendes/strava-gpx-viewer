@@ -8,7 +8,7 @@ class PageModel(QSortFilterProxyModel):
         # the model is empty, the row range is therefore invalid
         self.row_range = range(0)
 
-    def set_max_rows(self, max_rows):
+    def setMaxRows(self, max_rows):
         model_rows_count = self.sourceModel().rowCount()
 
         if self._max_rows == max_rows:
