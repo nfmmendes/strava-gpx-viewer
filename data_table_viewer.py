@@ -69,9 +69,10 @@ class DataTableViewer(QWidget):
         pagination_buttons_layout = QHBoxLayout()
         pagination_buttons_layout.addWidget(self._first_page_button)
         pagination_buttons_layout.addWidget(self._previous_page_button)
-        pagination_buttons_layout.addWidget(self._pagination_label)
+        pagination_buttons_layout.addWidget(self._pagination_label, 0)
         pagination_buttons_layout.addWidget(self._next_page_button)
         pagination_buttons_layout.addWidget(self._last_page_button)
+        pagination_buttons_layout.addStretch()
 
         self.layout.addWidget(view)
         self.layout.addLayout(pagination_buttons_layout)
