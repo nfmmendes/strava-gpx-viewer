@@ -4,7 +4,7 @@ import datetime
 from math import ceil
 
 ### For embedding in Qt
-from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QVBoxLayout, QFileDialog, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QFileDialog, QComboBox, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QWindow
 
 from pandas_model import PandasModel
@@ -44,6 +44,10 @@ class DataTableViewer(QWidget):
         view.setModel(self._page_model)
         view.resize(1024, 600)
 
+        self._page_size_combobox = QComboBox()
+        self._page_size_combobox.addItems(["50", "100", "200", "500", "1000"])
+        self._page_size_combobox.currentIndexChanged.connect(self.page_size_changed)
+
         self._first_page_button = QPushButton("First")
         self._first_page_button.setFixedSize(100, 30)
         self._first_page_button.clicked.connect(self.go_to_first_page)
@@ -74,6 +78,7 @@ class DataTableViewer(QWidget):
         pagination_buttons_layout.addWidget(self._last_page_button)
         pagination_buttons_layout.addStretch()
 
+        self.layout.addWidget(self._page_size_combobox, 0)
         self.layout.addWidget(view)
         self.layout.addLayout(pagination_buttons_layout)
         self.layout.addWidget(self._export_to_excel_button)
@@ -100,6 +105,13 @@ class DataTableViewer(QWidget):
         self.updateModel()
         self.render()
 
+    def page_size_changed(self, index):
+        value = self._page_size_combobox.currentText()
+        self._page_size = int(value) 
+        self._number_of_pages = ceil(len(self._df)/self._page_size)
+        self.updateModel()
+        self.render()
+
     def render(self):
         self._next_page_button.setEnabled(self._current_page < self._number_of_pages - 1)
         self._previous_page_button.setEnabled(self._current_page > 0)
@@ -107,6 +119,7 @@ class DataTableViewer(QWidget):
         self._pagination_label.setText(f"Page {self._current_page + 1} of {self._number_of_pages}")
 
     def updateModel(self):
+        self._page_model.setMaxRows(self._page_size)
         self._page_model.setCurrentPage(self._current_page)
 
     def exportTableToExcel(self):
