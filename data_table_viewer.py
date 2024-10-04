@@ -81,18 +81,22 @@ class DataTableViewer(QWidget):
 
     def go_to_first_page(self):
         self._current_page = 0
+        self.updateModel()
         self.render()
 
     def go_to_last_page(self):
         self._current_page = self._number_of_pages - 1
+        self.updateModel()
         self.render()
 
     def go_to_next_page(self):
         self._current_page = min(self._current_page + 1, self._number_of_pages - 1)
+        self.updateModel()
         self.render()
 
     def go_to_previous_page(self):
         self._current_page = max(0, self._current_page - 1)
+        self.updateModel()
         self.render()
 
     def render(self):
@@ -100,6 +104,9 @@ class DataTableViewer(QWidget):
         self._previous_page_button.setEnabled(self._current_page > 0)
 
         self._pagination_label.setText(f"Page {self._current_page + 1} of {self._number_of_pages}")
+
+    def updateModel(self):
+        self._page_model.setCurrentPage(self._current_page)
 
     def exportTableToExcel(self):
         file_name, _ = QFileDialog.getSaveFileName(self, "Export data frame", "", "Excel Files(*.xlsx)")
