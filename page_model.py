@@ -31,7 +31,7 @@ class PageModel(QSortFilterProxyModel):
 
         model_rows_count = self.sourceModel().rowCount()
 
-        if self.sourceModel() and page >= 0 and page*model_rows_count < model_rows_count:
+        if self.sourceModel() and page >= 0 and page*self._max_rows < model_rows_count:
             self._current_page = page
             
             first_row = min(self._current_page * self._max_rows, model_rows_count)
@@ -39,8 +39,6 @@ class PageModel(QSortFilterProxyModel):
 
             self.row_range = range(first_row, last_row)
             self.invalidateFilter()
-
-
 
     def filterAcceptsRow(self, row, parent):
         return row in self.row_range
@@ -52,7 +50,6 @@ class PageModel(QSortFilterProxyModel):
 
         super().setSourceModel(model)
 
-        print(self.sourceModel().rowCount())
         if not model:
             self.rowRange = range(0)
         else:
