@@ -80,7 +80,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
     def show_data_table(self):
-        print("Show data table clicked")
         self.data_table_viewer = DataTableViewer(self._df)
         self.data_table_viewer.show()
 
