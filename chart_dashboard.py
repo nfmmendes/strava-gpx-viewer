@@ -104,8 +104,9 @@ class ChartDashboard(QtWidgets.QWidget):
         plot.figure.canvas.draw()
 
     def open_speed_elevation_detailed_chart(self):
-        dashboard = SpeedElevationDetailedDashboard(self._speed_chart_data)
-
+        self._speed_elevation_detailed_window = SpeedElevationDetailedDashboard(self._speed_chart_data)
+        self._speed_elevation_detailed_window.show() 
+    
     def initialize_charts(self, df):
         self.plot_speed(df)
         self.plot_stats_over_time(df)
