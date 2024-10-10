@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qtagg import \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
-from PyQt6.QtWidgets import QGridLayout
+from PyQt6.QtWidgets import QGridLayout, QPushButton
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
@@ -20,7 +20,11 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
-        layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0, 1, 2)
+        self._speed_detailed_chart_button = QPushButton("Open advanced dashboard")
+        self._speed_detailed_chart_button.setFixedSize(200, 30)
+
+        layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0)
+        layout.addWidget(self._speed_detailed_chart_button, 0, 1)
         layout.addWidget(self._speed_chart_canvas, 1, 0, 1, 2)
         layout.addWidget(NavigationToolbar(self._elevation_distance_chart_canvas, self), 2, 0) 
         layout.addWidget(self._elevation_distance_chart_canvas, 3, 0) 
