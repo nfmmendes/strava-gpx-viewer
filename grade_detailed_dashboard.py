@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvas
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
 
-class SpeedElevationDetailedDashboard(QWidget):
+class GradeDetailedDashboard(QWidget):
     def __init__(self, data_frame):
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
@@ -23,38 +23,38 @@ class SpeedElevationDetailedDashboard(QWidget):
         new_chart = new_chart[new_chart["Distance"] > 0]
         print(new_chart)
 
-        self._speed_elevation_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
-        self._distance_elevation_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
-        self._time_elevation_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
+        self._speed_grade_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
+        self._distance_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
+        self._time_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
         self.resize(800, 800)
-        layout.addWidget(self._speed_elevation_canvas)
-        layout.addWidget(self._distance_elevation_canvas)
-        layout.addWidget(self._time_elevation_canvas)
+        layout.addWidget(self._speed_grade_canvas)
+        layout.addWidget(self._distance_grade_canvas)
+        layout.addWidget(self._time_grade_canvas)
 
         self.setLayout(layout)
 
-        chart = self._speed_elevation_canvas.figure.subplots()
+        chart = self._speed_grade_canvas.figure.subplots()
         chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Speed"])
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Speed (Km/h)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
 
-        chart = self._distance_elevation_canvas.figure.subplots()
+        chart = self._distance_grade_canvas.figure.subplots()
         chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Distance"]/1000)
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
 
-        chart = self._time_elevation_canvas.figure.subplots()
+        chart = self._time_grade_canvas.figure.subplots()
         chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Delta Time"]/60)
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Time (min)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
 
-        self._speed_elevation_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
-        self._distance_elevation_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
-        self._time_elevation_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
+        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
+        self._distance_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
+        self._time_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
 
 
 

@@ -10,7 +10,7 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QGridLayout, QPushButton
 
-from speed_elevation_detailed_dashboard import SpeedElevationDetailedDashboard
+from grade_detailed_dashboard import GradeDetailedDashboard
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
@@ -22,13 +22,13 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
-        self._speed_detailed_chart_button = QPushButton("Open advanced dashboard")
-        self._speed_detailed_chart_button.setFixedSize(200, 30)
-        self._speed_detailed_chart_button.clicked.connect(self.open_speed_elevation_detailed_chart)
-        self._speed_detailed_chart_button.setVisible(False)
+        self._grade_detailed_chart_button = QPushButton("Open advanced dashboard")
+        self._grade_detailed_chart_button.setFixedSize(200, 30)
+        self._grade_detailed_chart_button.clicked.connect(self.open_grade_detailed_chart)
+        self._grade_detailed_chart_button.setVisible(False)
 
         layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0)
-        layout.addWidget(self._speed_detailed_chart_button, 0, 1)
+        layout.addWidget(self._grade_detailed_chart_button, 0, 1)
         layout.addWidget(self._speed_chart_canvas, 1, 0, 1, 2)
         layout.addWidget(NavigationToolbar(self._elevation_distance_chart_canvas, self), 2, 0) 
         layout.addWidget(self._elevation_distance_chart_canvas, 3, 0) 
@@ -103,12 +103,12 @@ class ChartDashboard(QtWidgets.QWidget):
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
 
-    def open_speed_elevation_detailed_chart(self):
-        self._speed_elevation_detailed_window = SpeedElevationDetailedDashboard(self._speed_chart_data)
-        self._speed_elevation_detailed_window.show() 
+    def open_grade_detailed_chart(self):
+        self._grade_detailed_window = GradeDetailedDashboard(self._speed_chart_data)
+        self._grade_detailed_window.show() 
     
     def initialize_charts(self, df):
         self.plot_speed(df)
         self.plot_stats_over_time(df)
         self.plot_elevation_over_distance(df)
-        self._speed_detailed_chart_button.setVisible(True)
+        self._grade_detailed_chart_button.setVisible(True)
