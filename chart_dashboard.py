@@ -10,6 +10,8 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QGridLayout, QPushButton
 
+from speed_elevation_detailed_dashboard import SpeedElevationDetailedDashboard
+
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -22,6 +24,8 @@ class ChartDashboard(QtWidgets.QWidget):
 
         self._speed_detailed_chart_button = QPushButton("Open advanced dashboard")
         self._speed_detailed_chart_button.setFixedSize(200, 30)
+        self._speed_detailed_chart_button.clicked.connect(self.open_speed_elevation_detailed_chart)
+        self._speed_detailed_chart_button.setVisible(False)
 
         layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0)
         layout.addWidget(self._speed_detailed_chart_button, 0, 1)
@@ -44,7 +48,7 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.fill_between(df["KM"], df["Speed ma"], alpha=0.3)
 
         # Clean elevation grade data
-        summarized_df = df[["KM", "Elevation Gain", "Distance"]].rolling(20).mean()
+        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time"]].rolling(20).mean()
         grade_threshold = 0.5
         while len(summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) > grade_threshold]) < 15:
             grade_threshold = grade_threshold - 0.02 
@@ -58,6 +62,8 @@ class ChartDashboard(QtWidgets.QWidget):
         lines, labels = chart.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax2.legend(lines + lines2, labels + labels2, loc="upper right")
+
+        self._speed_chart_data = cleaned_df
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
@@ -96,7 +102,11 @@ class ChartDashboard(QtWidgets.QWidget):
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
 
+    def open_speed_elevation_detailed_chart(self):
+        dashboard = SpeedElevationDetailedDashboard(self._speed_chart_data)
+
     def initialize_charts(self, df):
         self.plot_speed(df)
         self.plot_stats_over_time(df)
         self.plot_elevation_over_distance(df)
+        self._speed_detailed_chart_button.setVisible(True)
