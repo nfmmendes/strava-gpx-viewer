@@ -48,7 +48,8 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.fill_between(df["KM"], df["Speed ma"], alpha=0.3)
 
         # Clean elevation grade data
-        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time"]].rolling(20).mean()
+        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time"]]
+        summarized_df[["Distance", "Elevation Gain"]] = summarized_df[["Distance", "Elevation Gain"]].rolling(20).mean()
         grade_threshold = 0.5
         while len(summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) > grade_threshold]) < 15:
             grade_threshold = grade_threshold - 0.02 
