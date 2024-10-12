@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qtagg import \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
+import matplotlib.cm as cm
 from PyQt6.QtWidgets import QGridLayout, QPushButton
 
 from grade_detailed_dashboard import GradeDetailedDashboard
@@ -94,6 +95,11 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas.figure.savefig("./time_stats_chart.png")
         plot.figure.canvas.draw()
 
+    def _normalized_grade(self, df, index, step_size):
+        grade = (100*df.iloc[index - step_size : index]["Elevation Gain"]/df.iloc[index - step_size : index]["Distance"]).mean()
+        grade = min(max(grade, -12), 12) # Keeps the gra between -12 and 12
+        return (12 + grade)/24 # A value between 0 and 1
+
     def plot_elevation_over_distance(self, df):
         self._elevation_distance_chart_canvas.figure.clf()
         chart = self._elevation_distance_chart_canvas.figure.subplots()
@@ -102,7 +108,14 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.set_xlabel("Distance (Km)")
         chart.set_ylabel("Elevation (m)")
         self._elevation_distance_chart_canvas.figure.subplots_adjust(bottom=0.15)
-        chart.fill_between(df["KM"], df["Elevation"])
+        
+        cmap = cm.coolwarm
+
+        step_size = 5
+        if len(df) > step_size:
+            for i in range(step_size, len(df), step_size):
+                chart.fill_between(df.iloc[i - step_size: i]["KM"], df.iloc[i - step_size : i]["Elevation"],\
+                        color= cmap(self._normalized_grade(df, i, step_size)))
 
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
