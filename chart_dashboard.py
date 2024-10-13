@@ -79,10 +79,11 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas.figure.clf()
         chart = self._stats_time_chart_canvas.figure.subplots()
 
-        plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"])
+        plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"], label ="Distance")
         chart.set_xlabel("Time (minutes)")
         chart.set_ylabel("Distance (Km)")
         chart.grid(color = 'green', linestyle = '--', linewidth = 0.5)
+        chart.legend(loc="upper left")
 
         ax2 = chart.twinx()
         ax2.plot(df[df["Elevation Gain"] > 0]["Tot. Time"].dt.total_seconds()/60, 
@@ -111,7 +112,7 @@ class ChartDashboard(QtWidgets.QWidget):
         
         cmap = cm.coolwarm
 
-        step_size = 5
+        step_size = 10
         if len(df) > step_size:
             for i in range(step_size, len(df), step_size):
                 chart.fill_between(df.iloc[i - step_size: i]["KM"], df.iloc[i - step_size : i]["Elevation"],\
