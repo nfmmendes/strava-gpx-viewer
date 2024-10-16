@@ -82,8 +82,8 @@ class ChartDashboard(QtWidgets.QWidget):
 
         speed_std_dev = df["Avg Speed"].std()
         final_avg = df.iloc[-1]["Avg Speed"]
-        lb = final_avg - 2*speed_std_dev
-        ub = final_avg + 2*speed_std_dev
+        lb = final_avg - 3*speed_std_dev
+        ub = final_avg + 3*speed_std_dev
         
         deviation = [min(1, (final_avg - x)/(final_avg - lb))/2 if x < final_avg else\
                      0.5 + min(1, (x - final_avg)/(ub - final_avg))/2 for x in df["Avg Speed"]]
@@ -94,13 +94,13 @@ class ChartDashboard(QtWidgets.QWidget):
             for i in range(step_size, len(df), step_size):
                 chart.fill_between(df.iloc[i - step_size: i]["Tot. Time"].dt.total_seconds()/60, df.iloc[i - step_size : i]["KM"],\
                         color= cmap(1 - np.array(deviation[i - step_size : i]).mean()))
-
-
+        
+        chart.annotate('avg speed dev: red < 0 < blue', xy = (0.05, 1.05), xycoords='axes fraction')
 
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"], label ="Distance")
         chart.set_xlabel("Time (minutes)")
         chart.set_ylabel("Distance (Km)")
-        chart.grid(color = 'green', linestyle = '--', linewidth = 0.5)
+        chart.grid(color = 'green', linestyle = '--', linewidth = 0.3)
         chart.legend(loc="upper left")
 
         ax2 = chart.twinx()
@@ -135,6 +135,9 @@ class ChartDashboard(QtWidgets.QWidget):
             for i in range(step_size, len(df), step_size):
                 chart.fill_between(df.iloc[i - step_size: i]["KM"], df.iloc[i - step_size : i]["Elevation"],\
                         color= cmap(self._normalized_grade(df, i, step_size)))
+
+        chart.annotate('grade scale: blue < 0% < red', xy = (0.05, 1.05), xycoords='axes fraction')
+        chart.grid(color = 'green', linestyle = '--', linewidth = 0.3)
 
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
