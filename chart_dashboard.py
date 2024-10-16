@@ -43,11 +43,11 @@ class ChartDashboard(QtWidgets.QWidget):
         chart = self._speed_chart_canvas.figure.subplots()
 
         chart.plot(df["KM"], df["Avg Speed"], label="average")
-        plot, = chart.plot(df["KM"], df["Speed ma"], label="instantaneous")
+        plot, = chart.plot(df["KM"], df["Speed rollmean"], label="instantaneous")
         chart.set_xlabel("Accumulated distance (Km)")
         chart.set_ylabel("Speed (Km/h)")
         chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
-        chart.fill_between(df["KM"], df["Speed ma"], alpha=0.3)
+        chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
 
         # Clean elevation grade data
         summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time"]]

@@ -31,7 +31,7 @@ class DataTableViewer(QWidget):
                                   if not pd.isnull(x) else ''
                                   )
         self._df["Speed"] = round(self._df["Speed"], 2)
-        self._df["Speed ma"] = round(self._df["Speed ma"], 2)
+        self._df["Speed rollmean"] = round(self._df["Speed rollmean"], 2)
         self._df["Avg Speed"] = round(self._df["Avg Speed"], 2)
 
         model = PandasModel(self._df.drop(columns=["Elevation Gain", "Delta Time"], axis=1))

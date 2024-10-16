@@ -55,7 +55,7 @@ def calculate_speed_data_frame(df):
     df["Elevation Gain"] = df["Elevation"].diff()
     df.at[0, "Elevation Gain"] = 0
     df["Speed"] = np.where(df["Delta Time"] > 0, 3.6*df["Distance"]/df["Delta Time"], 0)
-    df["Speed ma"] = df["Speed"].rolling(20).mean()
+    df["Speed rollmean"] = df["Speed"].rolling(20).mean()
     df["Avg Speed"] = np.where(toSeconds(df["Tot. Time"]) > 0, 3.6*df["Tot. Distance"]/toSeconds(df["Tot. Time"]), 0)
     df["KM"] = (df["Tot. Distance"]/100).astype(int)/10
 
