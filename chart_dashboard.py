@@ -1,6 +1,7 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 ### For embedding in Qt
 from matplotlib.backends.backend_qtagg import FigureCanvas
@@ -78,6 +79,23 @@ class ChartDashboard(QtWidgets.QWidget):
     def plot_stats_over_time(self, df):
         self._stats_time_chart_canvas.figure.clf()
         chart = self._stats_time_chart_canvas.figure.subplots()
+
+        speed_std_dev = df["Avg Speed"].std()
+        final_avg = df.iloc[-1]["Avg Speed"]
+        lb = final_avg - 2*speed_std_dev
+        ub = final_avg + 2*speed_std_dev
+        
+        deviation = [min(1, (final_avg - x)/(final_avg - lb))/2 if x < final_avg else\
+                     0.5 + min(1, (x - final_avg)/(ub - final_avg))/2 for x in df["Avg Speed"]]
+
+        cmap = cm.coolwarm
+        step_size = 20
+        if len(df) > step_size:
+            for i in range(step_size, len(df), step_size):
+                chart.fill_between(df.iloc[i - step_size: i]["Tot. Time"].dt.total_seconds()/60, df.iloc[i - step_size : i]["KM"],\
+                        color= cmap(1 - np.array(deviation[i - step_size : i]).mean()))
+
+
 
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"], label ="Distance")
         chart.set_xlabel("Time (minutes)")
