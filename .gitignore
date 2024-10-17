@@ -1,5 +1,6 @@
 .venv
 *.gpx
+*.swp
 *~
 *chart.png
 __pycache__/
