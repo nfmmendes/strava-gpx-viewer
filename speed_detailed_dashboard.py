@@ -25,25 +25,20 @@ class SpeedDetailedDashboard(QWidget):
         layout.addWidget(self._speed_grade_canvas)
         layout.addWidget(self._speed_elevation_grade_canvas)
 
-        xy = np.vstack([new_df["Grade"],new_df["Speed"]])
-        z = gaussian_kde(xy)(xy)
+        chart_grade = self._speed_grade_canvas.figure.subplots()
+        self._render_density_chart(chart_grade, new_df["Grade"], new_df["Speed"])
 
-        chart = self._speed_grade_canvas.figure.subplots()
-        chart.scatter(new_df["Grade"], new_df["Speed"], c=z, s=10)
-        chart.set_xlabel("Grade (%)")
-        chart.set_ylabel("Speed (Km/h)")
+        chart_grade.set_xlabel("Grade (%)")
+        chart_grade.set_ylabel("Speed (Km/h)")
 
         new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
         new_df["Grade Mult. Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
         
-        xy = np.vstack([new_df["Grade Mult. Elevation"], new_df["Speed"]])
-        z = gaussian_kde(xy)(xy)
- 
+        chart_elevation = self._speed_elevation_grade_canvas.figure.subplots()
+        self._render_density_chart(chart_elevation, new_df["Grade Mult. Elevation"], new_df["Speed"])
 
-        chart = self._speed_elevation_grade_canvas.figure.subplots()
-        chart.scatter(new_df["Grade Mult. Elevation"], new_df["Speed"], c = z, s = 10)
-        chart.set_xlabel("Grade X Total Elevation Gain (m)")
-        chart.set_ylabel("Speed (Km/h)")
+        chart_elevation.set_xlabel("Grade X Total Elevation Gain (m)")
+        chart_elevation.set_ylabel("Speed (Km/h)")
     
     def _filter_data(self, df):
         zero_quantile, quantile_995 = df["Speed"].quantile([0.0, 0.995])
@@ -54,3 +49,10 @@ class SpeedDetailedDashboard(QWidget):
         new_df = new_df[new_df["Grade"].between(quantile_005, quantile_995)]
 
         return new_df
+
+    def _render_density_chart(self, chart, col_x, col_y):
+        xy = np.vstack([col_x, col_y])
+        z = gaussian_kde(xy)(xy)
+        
+        chart.scatter(col_x, col_y, c = z, s = 10)
+
