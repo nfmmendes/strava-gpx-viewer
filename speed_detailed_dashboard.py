@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import gaussian_kde
 
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvas
@@ -26,8 +27,11 @@ class SpeedDetailedDashboard(QWidget):
 
         layout.addWidget(self._speed_grade_canvas)
 
+        xy = np.vstack([new_df["Grade"],new_df["Speed"]])
+        z = gaussian_kde(xy)(xy)
+
         chart = self._speed_grade_canvas.figure.subplots()
-        chart.scatter(100*new_df["Elevation Gain"]/new_df["Distance"], new_df["Speed"])
+        chart.scatter(new_df["Grade"], new_df["Speed"], c=z, s=10)
         chart.set_xlabel("Grade (%)")
         chart.set_ylabel("Speed (Km/h)")
 
