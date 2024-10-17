@@ -12,8 +12,15 @@ class SpeedDetailedDashboard(QWidget):
         layout = QVBoxLayout(self)
         self._redraw = False
 
-        new_df = data_frame[["Elevation Gain", "Distance", "Delta Time"]]
+        new_df = data_frame[["Elevation Gain", "Distance", "Delta Time"]].copy(deep = True)
         new_df["Speed"] = np.where(new_df["Delta Time"] > 0, 3.6*new_df["Distance"]/new_df["Delta Time"], 0)
+
+        zero_quantile, quantile_999 = new_df["Speed"].quantile([0.0, 0.999])
+        new_df = new_df[new_df["Speed"].between(zero_quantile, quantile_999)]
+
+        new_df["Grade"] = 100*new_df["Elevation Gain"]/new_df["Distance"]
+        quantile_001, quantile_999 = new_df["Grade"].quantile([0.001, 0.999])
+        new_df = new_df[new_df["Grade"].between(quantile_001, quantile_999)]
 
         self._speed_grade_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
 
