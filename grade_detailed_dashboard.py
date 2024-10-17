@@ -18,7 +18,7 @@ class GradeDetailedDashboard(QWidget):
         intervals = np.append(intervals, np.array([np.inf]))
         cuts = pd.cut(100*data_frame["Elevation Gain"]/data_frame["Distance"], intervals)
         
-        new_chart = data_frame[["Elevation Gain", "Distance", "Delta Time"]].groupby(cuts).sum()
+        new_chart = data_frame[["Elevation Gain", "Distance", "Delta Time"]].groupby(cuts, observed = True).sum()
         new_chart["Speed"] = np.where(new_chart["Delta Time"] > 0, 3.6*new_chart["Distance"]/new_chart["Delta Time"], 0)
         new_chart = new_chart[new_chart["Distance"] > 0]
 
