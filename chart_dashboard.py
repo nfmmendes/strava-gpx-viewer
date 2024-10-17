@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 import matplotlib.cm as cm
 from PyQt6.QtWidgets import QGridLayout, QPushButton
 
-from grade_detailed_dashboard import GradeDetailedDashboard
+from advanced_dashboard_viewer import AdvancedDashboardViewer
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
@@ -143,8 +143,8 @@ class ChartDashboard(QtWidgets.QWidget):
         plot.figure.canvas.draw()
 
     def open_grade_detailed_chart(self):
-        self._grade_detailed_window = GradeDetailedDashboard(self._speed_chart_data)
-        self._grade_detailed_window.show() 
+        self._advanced_dashboard = AdvancedDashboardViewer(self._speed_chart_data)
+        self._advanced_dashboard.show() 
     
     def initialize_charts(self, df):
         self.plot_speed(df)
