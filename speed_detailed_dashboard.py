@@ -1,3 +1,4 @@
+import threading
 import numpy as np
 import pandas as pd
 from scipy.stats import gaussian_kde
@@ -25,18 +26,22 @@ class SpeedDetailedDashboard(QWidget):
         layout.addWidget(self._speed_grade_canvas)
         layout.addWidget(self._speed_elevation_grade_canvas)
 
+        new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
+        new_df["Grade_X_Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
+        
         chart_grade = self._speed_grade_canvas.figure.subplots()
-        self._render_density_chart(chart_grade, new_df["Grade"], new_df["Speed"])
+        chart_elevation = self._speed_elevation_grade_canvas.figure.subplots()
+
+        t1 = threading.Thread(target = self._render_density_chart, args = [chart_grade, new_df["Grade"], new_df["Speed"]])
+        t2 = threading.Thread(target = self._render_density_chart, args = [chart_elevation, new_df["Grade_X_Elevation"], new_df["Speed"]])
+
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
 
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
-
-        new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
-        new_df["Grade Mult. Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
-        
-        chart_elevation = self._speed_elevation_grade_canvas.figure.subplots()
-        self._render_density_chart(chart_elevation, new_df["Grade Mult. Elevation"], new_df["Speed"])
-
         chart_elevation.set_xlabel("Grade X Total Elevation Gain (m)")
         chart_elevation.set_ylabel("Speed (Km/h)")
     
