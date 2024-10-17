@@ -16,12 +16,12 @@ class SpeedDetailedDashboard(QWidget):
         new_df = data_frame[["Elevation Gain", "Distance", "Delta Time"]].copy(deep = True)
         new_df["Speed"] = np.where(new_df["Delta Time"] > 0, 3.6*new_df["Distance"]/new_df["Delta Time"], 0)
 
-        zero_quantile, quantile_999 = new_df["Speed"].quantile([0.0, 0.999])
-        new_df = new_df[new_df["Speed"].between(zero_quantile, quantile_999)]
+        zero_quantile, quantile_995 = new_df["Speed"].quantile([0.0, 0.995])
+        new_df = new_df[new_df["Speed"].between(zero_quantile, quantile_995)]
 
         new_df["Grade"] = 100*new_df["Elevation Gain"]/new_df["Distance"]
-        quantile_001, quantile_999 = new_df["Grade"].quantile([0.001, 0.999])
-        new_df = new_df[new_df["Grade"].between(quantile_001, quantile_999)]
+        quantile_005, quantile_995 = new_df["Grade"].quantile([0.001, 0.995])
+        new_df = new_df[new_df["Grade"].between(quantile_005, quantile_995)]
 
         self._speed_grade_canvas = FigureCanvas(Figure(figsize = (4,3.2)))
         self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (4, 3.2)))
@@ -38,8 +38,7 @@ class SpeedDetailedDashboard(QWidget):
         chart.set_ylabel("Speed (Km/h)")
 
         new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
-        new_df["Tot. Elevation Gain"] =  new_df["Pos Elevation Gain"].cumsum()
-        new_df["Grade Mult. Elevation"] = new_df["Grade"]*new_df["Tot. Elevation Gain"]/100
+        new_df["Grade Mult. Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
         
         xy = np.vstack([new_df["Grade Mult. Elevation"], new_df["Speed"]])
         z = gaussian_kde(xy)(xy)
