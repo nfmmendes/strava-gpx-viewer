@@ -86,7 +86,7 @@ class ChartDashboard(QtWidgets.QWidget):
         ub = final_avg + 3*speed_std_dev
         
         deviation = [min(1, (final_avg - x)/(final_avg - lb))/2 if x < final_avg else\
-                     0.5 + min(1, (x - final_avg)/(ub - final_avg))/2 for x in df["Avg Speed"]]
+                     0.5 + min(1, (x - final_avg)/(ub - final_avg))/2 for x in df["Speed"]]
 
         cmap = cm.coolwarm
         step_size = 20
@@ -95,7 +95,7 @@ class ChartDashboard(QtWidgets.QWidget):
                 chart.fill_between(df.iloc[i - step_size: i]["Tot. Time"].dt.total_seconds()/60, df.iloc[i - step_size : i]["KM"],\
                         color= cmap(1 - np.array(deviation[i - step_size : i]).mean()))
         
-        chart.annotate('avg speed dev: red < 0 < blue', xy = (0.05, 1.05), xycoords='axes fraction')
+        chart.annotate('speed: red < average < blue', xy = (0.05, 1.05), xycoords='axes fraction')
 
         plot, = chart.plot(df["Tot. Time"].dt.total_seconds()/60, df["KM"], label ="Distance")
         chart.set_xlabel("Time (minutes)")
