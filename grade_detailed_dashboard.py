@@ -36,21 +36,21 @@ class GradeDetailedDashboard(QWidget):
 
         ## Create charts
         chart = self._speed_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Speed"])
+        chart.bar([f"[{x.left}% , {x.right}%)" for x in new_chart.index] , new_chart["Speed"])
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Speed (Km/h)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
 
         chart = self._distance_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Distance"]/1000)
+        chart.bar([f"[{x.left}% , {x.right}%)" for x in new_chart.index] , new_chart["Distance"]/1000)
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.2)
 
         chart = self._time_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left}%,{x.right}%)" for x in new_chart.index] , new_chart["Delta Time"]/60)
+        chart.bar([f"[{x.left}% , {x.right}%)" for x in new_chart.index] , new_chart["Delta Time"]/60)
         chart.set_xlabel("Grade intervals")
         chart.set_ylabel("Time (min)")
         chart.bar_label(chart.containers[0], fmt='%.2f')

@@ -51,14 +51,14 @@ class SpeedDetailedDashboard(QWidget):
         chart_grade.set_ylabel("Speed (Km/h)")
         self._speed_grade_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
 
-        chart_elevation.set_xlabel("Grade X Total Elevation Gain (m)")
+        chart_elevation.set_xlabel("Grade X Accumulated Elevation Gain (m)")
         chart_elevation.set_ylabel("Speed (Km/h)")
         self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15)
 
         new_df = self._define_speed_cuts(new_df)
 
         chart = self._speed_over_time_canvas.figure.subplots()
-        chart.bar([f"[{x.left},{x.right})" for x in new_df.index] , new_df["Delta Time"]/60)
+        chart.bar([f"[{x.left} , {x.right})" for x in new_df.index] , new_df["Delta Time"]/60)
         chart.set_xlabel("Speed intervals (Km/h)")
         chart.set_ylabel("Time (m)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
@@ -66,7 +66,7 @@ class SpeedDetailedDashboard(QWidget):
         self._speed_over_time_canvas.figure.subplots_adjust(bottom=0.2)
 
         chart = self._speed_over_distance_canvas.figure.subplots()
-        chart.bar([f"[{x.left},{x.right})" for x in new_df.index] , new_df["Distance"]/1000)
+        chart.bar([f"[{x.left} , {x.right})" for x in new_df.index] , new_df["Distance"]/1000)
         chart.set_xlabel("Speed intervals (Km/h)")
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
@@ -98,5 +98,5 @@ class SpeedDetailedDashboard(QWidget):
         xy = np.vstack([col_x, col_y])
         z = gaussian_kde(xy)(xy)
         
-        chart.scatter(col_x, col_y, c = z, s = 10)
+        chart.scatter(col_x, col_y, c = z, s = 3)
 
