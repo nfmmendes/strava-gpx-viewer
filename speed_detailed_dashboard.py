@@ -6,12 +6,12 @@ from scipy.stats import gaussian_kde
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvas
 from matplotlib.figure import Figure
-from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout
 
 class SpeedDetailedDashboard(QWidget):
     def __init__(self, data_frame):
         super().__init__()
-        layout = QVBoxLayout(self)
+        layout = QGridLayout(self)
         self._redraw = False
         
         new_df = data_frame[["Elevation Gain", "Distance", "Delta Time"]].copy(deep = True)
@@ -20,12 +20,19 @@ class SpeedDetailedDashboard(QWidget):
 
         new_df = self._filter_data(new_df)
 
-        self._speed_grade_canvas = FigureCanvas(Figure(figsize = (4,3.2)))
-        self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (4, 3.2)))
+        self._speed_grade_canvas = FigureCanvas(Figure(figsize = (6,3.2)))
+        self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (6, 3.2)))
+        self._speed_over_time_canvas = FigureCanvas(Figure(figsize = (4, 6)))
+        self._speed_over_distance_canvas = FigureCanvas(Figure(figsize = (4, 6)))
         
-        layout.addWidget(self._speed_grade_canvas)
-        layout.addWidget(self._speed_elevation_grade_canvas)
-
+        layout.addWidget(self._speed_grade_canvas, 0, 0)
+        layout.addWidget(self._speed_elevation_grade_canvas, 0, 1)
+        layout.addWidget(self._speed_over_time_canvas, 1, 0, 1, 2)
+        layout.addWidget(self._speed_over_distance_canvas, 2, 0)
+        layout.setRowStretch(0, 10)
+        layout.setRowStretch(1, 8)
+        layout.setRowStretch(2, 8)
+        
         new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
         new_df["Grade_X_Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
         
@@ -42,8 +49,12 @@ class SpeedDetailedDashboard(QWidget):
 
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
+        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+
         chart_elevation.set_xlabel("Grade X Total Elevation Gain (m)")
         chart_elevation.set_ylabel("Speed (Km/h)")
+        self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+
     
     def _filter_data(self, df):
         zero_quantile, quantile_995 = df["Speed"].quantile([0.0, 0.995])
