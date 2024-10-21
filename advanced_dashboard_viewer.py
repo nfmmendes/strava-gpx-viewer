@@ -18,5 +18,5 @@ class AdvancedDashboardViewer(QWidget):
 
         layout.addWidget(tab_widget)
         
-        self.resize(800, 800)
+        self.resize(1024, 800)
 

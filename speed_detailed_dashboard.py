@@ -13,7 +13,9 @@ class SpeedDetailedDashboard(QWidget):
         super().__init__()
         layout = QGridLayout(self)
         self._redraw = False
-        
+       
+        self._tick_label_size = 8
+
         new_df = data_frame[["Elevation Gain", "Distance", "Delta Time"]].copy(deep = True)
         new_df["Speed"] = np.where(new_df["Delta Time"] > 0, 3.6*new_df["Distance"]/new_df["Delta Time"], 0)
         new_df["Grade"] = 100*new_df["Elevation Gain"]/new_df["Distance"]
@@ -49,10 +51,12 @@ class SpeedDetailedDashboard(QWidget):
 
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
+        chart_grade.tick_params(axis='x', which='major', labelsize=self._tick_label_size)
         self._speed_grade_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
 
         chart_elevation.set_xlabel("Grade X Accumulated Elevation Gain (m)")
         chart_elevation.set_ylabel("Speed (Km/h)")
+        chart_elevation.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15)
 
     def _render_interval_charts(self, new_df):
@@ -63,6 +67,7 @@ class SpeedDetailedDashboard(QWidget):
         chart.set_ylabel("Time (m)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
+        chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         self._speed_over_time_canvas.figure.subplots_adjust(bottom=0.2)
 
         chart = self._speed_over_distance_canvas.figure.subplots()
@@ -71,6 +76,7 @@ class SpeedDetailedDashboard(QWidget):
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
+        chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)       
             
     def _define_speed_cuts(self, df):
