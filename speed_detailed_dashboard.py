@@ -46,8 +46,6 @@ class SpeedDetailedDashboard(QWidget):
 
         t1.start()
         t2.start()
-        t1.join()
-        t2.join()
 
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
@@ -99,4 +97,4 @@ class SpeedDetailedDashboard(QWidget):
         z = gaussian_kde(xy)(xy)
         
         chart.scatter(col_x, col_y, c = z, s = 3)
-
+        chart.get_figure().canvas.draw()
