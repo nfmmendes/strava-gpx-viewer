@@ -38,6 +38,8 @@ class SpeedDetailedDashboard(QWidget):
         
         chart_grade = self._speed_grade_canvas.figure.subplots()
         chart_elevation = self._speed_elevation_grade_canvas.figure.subplots()
+        
+        self._render_interval_charts(self._define_speed_cuts(new_df))
 
         t1 = threading.Thread(target = self._render_density_chart, args = [chart_grade, new_df["Grade"], new_df["Speed"]])
         t2 = threading.Thread(target = self._render_density_chart, args = [chart_elevation, new_df["Grade_X_Elevation"], new_df["Speed"]])
@@ -55,8 +57,8 @@ class SpeedDetailedDashboard(QWidget):
         chart_elevation.set_ylabel("Speed (Km/h)")
         self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15)
 
-        new_df = self._define_speed_cuts(new_df)
-
+    def _render_interval_charts(self, new_df):
+        
         chart = self._speed_over_time_canvas.figure.subplots()
         chart.bar([f"[{x.left} , {x.right})" for x in new_df.index] , new_df["Delta Time"]/60)
         chart.set_xlabel("Speed intervals (Km/h)")
@@ -71,17 +73,15 @@ class SpeedDetailedDashboard(QWidget):
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
-        self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
+        self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)       
             
-    def _define_speed_cuts(self, new_df):
+    def _define_speed_cuts(self, df):
         intervals = np.arange(10, 50.00001, 5)
         intervals = np.append(0, intervals)
         intervals = np.append(intervals, np.arange(50.0001, 100, 10))
         intervals = np.append(intervals, np.array([np.inf]))
-        cuts = pd.cut(new_df["Speed"], intervals)
-        new_df = new_df[["Distance", "Delta Time"]].groupby(cuts, observed = True).sum()
-
-        return new_df
+        cuts = pd.cut(df["Speed"], intervals)
+        return df[["Distance", "Delta Time"]].copy(deep= True).groupby(cuts, observed = True).sum()
 
 
     def _filter_data(self, df):
