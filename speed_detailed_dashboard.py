@@ -45,10 +45,7 @@ class SpeedDetailedDashboard(QWidget):
 
         t1 = threading.Thread(target = self._render_density_chart, args = [chart_grade, new_df["Grade"], new_df["Speed"]])
         t2 = threading.Thread(target = self._render_density_chart, args = [chart_elevation, new_df["Grade_X_Elevation"], new_df["Speed"]])
-
-        t1.start()
-        t2.start()
-
+ 
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
         chart_grade.tick_params(axis='x', which='major', labelsize=self._tick_label_size)
@@ -58,6 +55,10 @@ class SpeedDetailedDashboard(QWidget):
         chart_elevation.set_ylabel("Speed (Km/h)")
         chart_elevation.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15)
+
+        t1.start()
+        t2.start()
+
 
     def _render_interval_charts(self, new_df):
         
