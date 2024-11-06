@@ -23,17 +23,20 @@ class SpeedDetailedDashboard(QWidget):
         new_df = self._filter_data(new_df)
 
         self._speed_grade_canvas = FigureCanvas(Figure(figsize = (6,3)))
+        self._speed_frequence_canvas = FigureCanvas(Figure(figsize = (6, 3)))
         self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (6, 3)))
         self._speed_over_time_canvas = FigureCanvas(Figure(figsize = (4, 6)))
         self._speed_over_distance_canvas = FigureCanvas(Figure(figsize = (4, 6)))
         
         layout.addWidget(self._speed_grade_canvas, 0, 0)
         layout.addWidget(self._speed_elevation_grade_canvas, 0, 1)
-        layout.addWidget(self._speed_over_time_canvas, 1, 0, 1, 2)
-        layout.addWidget(self._speed_over_distance_canvas, 2, 0, 1, 2)
+        layout.addWidget(self._speed_frequence_canvas, 1, 0, 1, 2)
+        layout.addWidget(self._speed_over_time_canvas, 2, 0, 1, 2)
+        layout.addWidget(self._speed_over_distance_canvas, 3, 0, 1, 2)
         layout.setRowStretch(0, 10)
         layout.setRowStretch(1, 8)
         layout.setRowStretch(2, 8)
+        layout.setRowStretch(3, 8)
         
         new_df["Pos Elevation Gain"] = [ 0 if x < 0 else x for x in new_df["Elevation Gain"]]
         new_df["Grade_X_Elevation"] = new_df["Grade"]*new_df["Pos Elevation Gain"].cumsum()/100
@@ -42,6 +45,7 @@ class SpeedDetailedDashboard(QWidget):
         chart_elevation = self._speed_elevation_grade_canvas.figure.subplots()
         
         self._render_interval_charts(self._define_speed_cuts(new_df))
+        self._render_speed_frequence_chart(new_df)
 
         t1 = threading.Thread(target = self._render_density_chart, args = [chart_grade, new_df["Grade"], new_df["Speed"]])
         t2 = threading.Thread(target = self._render_density_chart, args = [chart_elevation, new_df["Grade_X_Elevation"], new_df["Speed"]])
@@ -58,6 +62,17 @@ class SpeedDetailedDashboard(QWidget):
 
         t1.start()
         t2.start()
+
+
+    def _render_speed_frequence_chart(self, new_df):
+        chart = self._speed_frequence_canvas.figure.subplots()
+
+        count_series = round(new_df['Speed'], 1).value_counts()
+        count_series = count_series[count_series > 10]
+
+        chart.bar(x = count_series.index, height = count_series.values)
+        chart.set_xlabel("Frequence")
+        chart.set_ylabel("Speed")
 
 
     def _render_interval_charts(self, new_df):
