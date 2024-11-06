@@ -22,8 +22,8 @@ class SpeedDetailedDashboard(QWidget):
 
         new_df = self._filter_data(new_df)
 
-        self._speed_grade_canvas = FigureCanvas(Figure(figsize = (6,3)))
-        self._speed_frequence_canvas = FigureCanvas(Figure(figsize = (6, 3)))
+        self._speed_grade_canvas = FigureCanvas(Figure(figsize = (6,2.5)))
+        self._speed_frequence_canvas = FigureCanvas(Figure(figsize = (6, 2.5)))
         self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (6, 3)))
         self._speed_over_time_canvas = FigureCanvas(Figure(figsize = (4, 6)))
         self._speed_over_distance_canvas = FigureCanvas(Figure(figsize = (4, 6)))
@@ -53,12 +53,12 @@ class SpeedDetailedDashboard(QWidget):
         chart_grade.set_xlabel("Grade (%)")
         chart_grade.set_ylabel("Speed (Km/h)")
         chart_grade.tick_params(axis='x', which='major', labelsize=self._tick_label_size)
-        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.18, hspace=0.2)
 
         chart_elevation.set_xlabel("Grade X Accumulated Elevation Gain (m)")
         chart_elevation.set_ylabel("Speed (Km/h)")
         chart_elevation.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.15)
+        self._speed_elevation_grade_canvas.figure.subplots_adjust(bottom=0.18)
 
         t1.start()
         t2.start()
@@ -70,9 +70,10 @@ class SpeedDetailedDashboard(QWidget):
         count_series = round(new_df['Speed'], 1).value_counts()
         count_series = count_series[count_series > 10]
 
-        chart.bar(x = count_series.index, height = count_series.values)
-        chart.set_xlabel("Frequence")
-        chart.set_ylabel("Speed")
+        chart.bar(x = count_series.index, height = count_series.values, width=0.1)
+        chart.set_xlabel("Speed")
+        chart.set_ylabel("Frequence")
+        self._speed_frequence_canvas.figure.subplots_adjust(bottom=0.25)
 
 
     def _render_interval_charts(self, new_df):
@@ -84,7 +85,7 @@ class SpeedDetailedDashboard(QWidget):
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        self._speed_over_time_canvas.figure.subplots_adjust(bottom=0.2)
+        self._speed_over_time_canvas.figure.subplots_adjust(bottom=0.25)
 
         chart = self._speed_over_distance_canvas.figure.subplots()
         chart.bar([f"[{x.left} , {x.right})" for x in new_df.index] , new_df["Distance"]/1000)
@@ -93,7 +94,7 @@ class SpeedDetailedDashboard(QWidget):
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.margins(y = 0.3)
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)       
+        self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.25)       
             
     def _define_speed_cuts(self, df):
         intervals = np.arange(10, 50.00001, 5)
@@ -108,7 +109,6 @@ class SpeedDetailedDashboard(QWidget):
         zero_quantile, quantile_995 = df["Speed"].quantile([0.0, 0.995])
         new_df = df[df["Speed"].between(zero_quantile, quantile_995)]
 
-       
         quantile_005, quantile_995 = new_df["Grade"].quantile([0.001, 0.995])
         new_df = new_df[new_df["Grade"].between(quantile_005, quantile_995)]
 
