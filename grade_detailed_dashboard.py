@@ -30,7 +30,6 @@ class GradeDetailedDashboard(QWidget):
         self._distance_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._time_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
-        self.resize(800, 800)
         layout.addWidget(self._grade_frequence_canvas)
         layout.addWidget(self._speed_grade_canvas)
         layout.addWidget(self._distance_grade_canvas)
