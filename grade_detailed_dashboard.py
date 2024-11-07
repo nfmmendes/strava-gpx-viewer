@@ -25,11 +25,13 @@ class GradeDetailedDashboard(QWidget):
         new_chart = new_chart[new_chart["Distance"] > 0]
 
         ## Define the layout
+        self._grade_frequence_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._speed_grade_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
         self._distance_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
         self._time_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
 
         self.resize(800, 800)
+        layout.addWidget(self._grade_frequence_canvas)
         layout.addWidget(self._speed_grade_canvas)
         layout.addWidget(self._distance_grade_canvas)
         layout.addWidget(self._time_grade_canvas)
@@ -37,6 +39,14 @@ class GradeDetailedDashboard(QWidget):
         self.setLayout(layout)
 
         ## Create charts
+        chart = self._grade_frequence_canvas.figure.subplots()
+        count_series = round(100*data_frame["Elevation Gain"]/data_frame["Distance"], 1).value_counts()
+        count_series = count_series[count_series > 10]
+        chart.bar(x = count_series.index, height = count_series.values, width=0.1)
+        chart.set_xlabel("Grade")
+        chart.set_ylabel("Frequence")
+        self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25)
+
         chart = self._speed_grade_canvas.figure.subplots()
         chart.bar([f"[{x.left:.0f} , {x.right:.0f})" for x in new_chart.index] , new_chart["Speed"])
         chart.set_xlabel("Grade intervals (%)")
@@ -61,9 +71,10 @@ class GradeDetailedDashboard(QWidget):
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         chart.margins(y = 0.2)
 
-        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
-        self._distance_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
-        self._time_grade_canvas.figure.subplots_adjust(bottom=0.2, hspace=0.2)
+        self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
 
 
 
