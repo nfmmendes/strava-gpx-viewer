@@ -40,6 +40,9 @@ class ChartDashboard(QtWidgets.QWidget):
     def hover(self, event):
         x, y = event.xdata, event.ydata
 
+        if x == None or y == None:
+            QToolTip.hideText()
+            return
 
         text = f"<b> Distance: </b> {round(x, 2)} <br> <b> Grade: </b> {round(y, 2)}"
         win =  self._speed_chart_canvas.figure.canvas.window()
