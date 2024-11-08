@@ -29,7 +29,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._grade_detailed_chart_button.clicked.connect(self.open_grade_detailed_chart)
         self._grade_detailed_chart_button.setVisible(False)
 
-        layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self), 0, 0)
+        layout.addWidget(NavigationToolbar(self._speed_chart_canvas, self, coordinates = False), 0, 0)
         layout.addWidget(self._grade_detailed_chart_button, 0, 1)
         layout.addWidget(self._speed_chart_canvas, 1, 0, 1, 2)
         layout.addWidget(NavigationToolbar(self._elevation_distance_chart_canvas, self), 2, 0) 
@@ -104,7 +104,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
         self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self.hover)
-
+ 
         plot.figure.canvas.draw()
 
     def plot_stats_over_time(self, df):
