@@ -44,7 +44,15 @@ class ChartDashboard(QtWidgets.QWidget):
             QToolTip.hideText()
             return
 
-        text = f"<b> Distance: </b> {round(x, 2)} <br> <b> Grade: </b> {round(y, 2)}"
+        row_closest = self._speed_chart_data.loc[(self._speed_chart_data.KM - x).abs().idxmin()]
+        #print(row_closest)
+
+        text = f"<div style='padding: 20px'>\
+                     <b> Distance (m): </b> {round(row_closest.KM, 2)} <br>\
+                     <b> Grade (%): </b> {round(100*row_closest['Elevation Gain']/row_closest.Distance, 1)} <br>\
+                     <b> Instant speed (Km/h): </b> {round(3.6*row_closest.Distance/row_closest['Delta Time'], 2)}\
+                     <b> Average speed (Km/h): </b> {round(row_closest['Avg Speed'], 2)}\
+                 </div>"
         win =  self._speed_chart_canvas.figure.canvas.window()
 
         if text:
