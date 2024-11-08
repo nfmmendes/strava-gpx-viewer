@@ -36,29 +36,34 @@ class ChartDashboard(QtWidgets.QWidget):
         layout.addWidget(self._elevation_distance_chart_canvas, 3, 0) 
         layout.addWidget(NavigationToolbar(self._stats_time_chart_canvas, self), 2, 1) 
         layout.addWidget(self._stats_time_chart_canvas, 3, 1)
-
+        
     def hover(self, event):
+        text = ""
         x, y = event.xdata, event.ydata
-
+        win =  self._speed_chart_canvas.figure.canvas.window()
+        
         if x == None or y == None:
+            win.setToolTip(None)
             QToolTip.hideText()
             return
-
+        
         row_closest = self._speed_chart_data.loc[(self._speed_chart_data.KM - x).abs().idxmin()]
-        #print(row_closest)
 
-        text = f"<div style='padding: 20px'>\
-                     <b> Distance (m): </b> {round(row_closest.KM, 2)} <br>\
-                     <b> Grade (%): </b> {round(100*row_closest['Elevation Gain']/row_closest.Distance, 1)} <br>\
-                     <b> Instant speed (Km/h): </b> {round(3.6*row_closest.Distance/row_closest['Delta Time'], 2)}\
-                     <b> Average speed (Km/h): </b> {round(row_closest['Avg Speed'], 2)}\
-                 </div>"
-        win =  self._speed_chart_canvas.figure.canvas.window()
+        text = f"<b> Distance (m): </b> {round(row_closest.KM, 2)} <br>\
+                 <b> Grade (%): </b> {round(100*row_closest['Elevation Gain']/row_closest.Distance, 1)} <br>\
+                 <b> Instant speed (Km/h): </b> {round(3.6*row_closest.Distance/row_closest['Delta Time'], 2)}\
+                 <b> Average speed (Km/h): </b> {round(row_closest['Avg Speed'], 2)}"
+        
+        win.setStyleSheet("""QToolTip { 
+                                       padding: 10px; 
+                                       background-color: white; 
+                                       border: black solid 1px
+                          }""")
 
         if text:
            win.setToolTip(text)
         else:
-           win.setToolTip(text)
+           win.setToolTip(None)
            QToolTip.hideText()
 
 
