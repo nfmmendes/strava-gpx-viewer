@@ -39,6 +39,8 @@ class ChartDashboard(QtWidgets.QWidget):
 
     def hover(self, event):
         x, y = event.xdata, event.ydata
+
+
         text = f"<b> Distance: </b> {round(x, 2)} <br> <b> Grade: </b> {round(y, 2)}"
         win =  self._speed_chart_canvas.figure.canvas.window()
 
@@ -53,15 +55,8 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
 
-        chart.plot(df["KM"], df["Avg Speed"], label="average")
-        plot, = chart.plot(df["KM"], df["Speed rollmean"], label="instantaneous")
-        chart.set_xlabel("Accumulated distance (Km)")
-        chart.set_ylabel("Speed (Km/h)")
-        chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
-        chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
-
         # Clean elevation grade data
-        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time"]]
+        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time", "Avg Speed"]]
 
         rolling_mean = summarized_df[["Distance", "Elevation Gain"]].rolling(20).mean()
         summarized_df.loc[: ,"Distance"] = rolling_mean["Distance"]
@@ -72,6 +67,13 @@ class ChartDashboard(QtWidgets.QWidget):
             grade_threshold = grade_threshold - 0.02 
         cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
  
+        chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
+        plot, = chart.plot(df["KM"], df["Speed rollmean"], label="instantaneous")
+        chart.set_xlabel("Accumulated distance (Km)")
+        chart.set_ylabel("Speed (Km/h)")
+        chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
+        chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
+
         ax2 = chart.twinx()
         ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
                  color="#334455", label="Grade")
