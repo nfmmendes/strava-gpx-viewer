@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qtagg import \
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
-from PyQt6.QtWidgets import QGridLayout, QPushButton
+from PyQt6.QtWidgets import QGridLayout, QPushButton, QToolTip
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
 
@@ -37,7 +37,18 @@ class ChartDashboard(QtWidgets.QWidget):
         layout.addWidget(NavigationToolbar(self._stats_time_chart_canvas, self), 2, 1) 
         layout.addWidget(self._stats_time_chart_canvas, 3, 1)
 
- 
+    def hover(self, event):
+        x, y = event.xdata, event.ydata
+        text = f"<b> Distance: </b> {round(x, 2)} <br> <b> Grade: </b> {round(y, 2)}"
+        win =  self._speed_chart_canvas.figure.canvas.window()
+
+        if text:
+           win.setToolTip(text)
+        else:
+           win.setToolTip(text)
+           QToolTip.hideText()
+
+
     def plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
@@ -74,6 +85,8 @@ class ChartDashboard(QtWidgets.QWidget):
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
+        self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self.hover)
+
         plot.figure.canvas.draw()
 
     def plot_stats_over_time(self, df):
