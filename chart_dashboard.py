@@ -70,7 +70,7 @@ class ChartDashboard(QtWidgets.QWidget):
         chart = self._speed_chart_canvas.figure.subplots()
 
         # Clean elevation grade data
-        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time", "Avg Speed"]]
+        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time", "Avg Speed", "Speed rollmean"]]
 
         rolling_mean = summarized_df[["Distance", "Elevation Gain"]].rolling(20).mean()
         summarized_df.loc[: ,"Distance"] = rolling_mean["Distance"]
@@ -82,7 +82,7 @@ class ChartDashboard(QtWidgets.QWidget):
         cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
  
         chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
-        plot, = chart.plot(df["KM"], df["Speed rollmean"], label="instantaneous")
+        plot, = chart.plot(cleaned_df["KM"], cleaned_df["Speed rollmean"], label="instantaneous")
         chart.set_xlabel("Accumulated distance (Km)")
         chart.set_ylabel("Speed (Km/h)")
         chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
