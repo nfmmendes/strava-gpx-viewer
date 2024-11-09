@@ -36,36 +36,34 @@ class ChartDashboard(QtWidgets.QWidget):
         layout.addWidget(self._elevation_distance_chart_canvas, 3, 0) 
         layout.addWidget(NavigationToolbar(self._stats_time_chart_canvas, self), 2, 1) 
         layout.addWidget(self._stats_time_chart_canvas, 3, 1)
-        
-    def hover(self, event):
-        text = ""
+
+        ChartDashboard.setStyleSheet(self, """QToolTip { 
+                                padding: 10px; 
+                                background-color: white; 
+                                border: black solid 1px
+                   }""")
+                
+    def speed_chart_hover(self, event):
         x, y = event.xdata, event.ydata
-        win =  self._speed_chart_canvas.figure.canvas.window()
+        text = ""
+
+        self._speed_chart_canvas.setToolTip(None)
         
         if x == None or y == None:
-            win.setToolTip(None)
             QToolTip.hideText()
             return
         
         row_closest = self._speed_chart_data.loc[(self._speed_chart_data.KM - x).abs().idxmin()]
-
         text = f"<b> Distance (m): </b> {round(row_closest.KM, 2)} <br>\
                  <b> Grade (%): </b> {round(100*row_closest['Elevation Gain']/row_closest.Distance, 1)} <br>\
                  <b> Instant speed (Km/h): </b> {round(3.6*row_closest.Distance/row_closest['Delta Time'], 2)}\
                  <b> Average speed (Km/h): </b> {round(row_closest['Avg Speed'], 2)}"
         
-        win.setStyleSheet("""QToolTip { 
-                                       padding: 10px; 
-                                       background-color: white; 
-                                       border: black solid 1px
-                          }""")
-
         if text:
-           win.setToolTip(text)
+           self._speed_chart_canvas.setToolTip(text)
         else:
-           win.setToolTip(None)
+           self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
-
 
     def plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
@@ -103,7 +101,7 @@ class ChartDashboard(QtWidgets.QWidget):
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
-        self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self.hover)
+        self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self.speed_chart_hover)
  
         plot.figure.canvas.draw()
 
