@@ -4,9 +4,11 @@ import math
 from geopy import distance
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import sys
 
+"""
+Calculate the geodesic distance between two points based in their
+coordinates. 
+"""
 def calculate_distance(a, b):
     p1 = (a.latitude, a.longitude, a.elevation)
     p2 = (b.latitude, b.longitude, b.elevation)
@@ -15,9 +17,9 @@ def calculate_distance(a, b):
 
     return math.sqrt(flat_distance**2 + (p2[2] - p1[2])**2)
 
-# Parsing an existing file:
-# -------------------------
-
+"""
+Read the data from a gpx file and use it to fill a pandas dataframe.
+"""
 def get_data_frame_from_gpx_file(file_name): 
     
     gpx_file = open(file_name, 'r')
@@ -47,6 +49,9 @@ def get_data_frame_from_gpx_file(file_name):
 
     return df
 
+"""
+Calculate the instantaneous speed on each measurement. 
+"""
 def calculate_speed_data_frame(df):
 
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
