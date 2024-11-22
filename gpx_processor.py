@@ -41,7 +41,15 @@ def get_data_frame_from_gpx_file(file_name):
                 rows.append([time, lat, long, elevation, dist, accumulated_distance, accumulated_time])
                 previous = point
             
-    df = pd.DataFrame(columns=["Time", "Latitude", "Longitude", "Elevation", "Distance", "Tot. Distance", "Tot. Time"], data=rows)
+    df = pd.DataFrame(columns= ["Time",
+                                "Latitude", 
+                                "Longitude", 
+                                "Elevation", 
+                                "Distance",
+                                "Tot. Distance", 
+                                "Tot. Time"], 
+                      data=rows)
+    
     df["Delta Time"] = df["Time"].diff().dt.total_seconds()
     df.at[0, "Delta Time"] = 0
     df["Elevation Gain"] = df["Elevation"].diff()
