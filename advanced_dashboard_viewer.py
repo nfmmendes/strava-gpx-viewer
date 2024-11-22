@@ -1,11 +1,10 @@
-import numpy as np
-import pandas as pd
-
-from PyQt6.QtWidgets import QWidget, QLabel, QTabWidget, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from grade_detailed_dashboard import GradeDetailedDashboard
 from speed_detailed_dashboard import SpeedDetailedDashboard
 
-
+"""
+Window to hold advanced dashboards about the speed and grade data. 
+"""
 class AdvancedDashboardViewer(QWidget):
     def __init__(self, data_frame):
         super().__init__()
