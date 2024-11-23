@@ -24,11 +24,13 @@ class GradeDetailedDashboard(QWidget):
         new_chart["Speed"] = np.where(new_chart["Delta Time"] > 0, 3.6*new_chart["Distance"]/new_chart["Delta Time"], 0)
         new_chart = new_chart[new_chart["Distance"] > 0]
 
+        canvas_factory = lambda w, h : FigureCanvas(Figure(figsize = (6,2.5)))
+
         ## Define the layout
-        self._grade_frequence_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
-        self._speed_grade_canvas = FigureCanvas(Figure(figsize=(4,3.2)))
-        self._distance_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
-        self._time_grade_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
+        self._grade_frequence_canvas = canvas_factory(4, 3.2)
+        self._speed_grade_canvas = canvas_factory(4,3.2)
+        self._distance_grade_canvas = canvas_factory(4, 3.2)
+        self._time_grade_canvas = canvas_factory(4, 3.2)
 
         layout.addWidget(self._grade_frequence_canvas)
         layout.addWidget(self._speed_grade_canvas)

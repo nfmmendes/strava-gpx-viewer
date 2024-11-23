@@ -22,11 +22,13 @@ class SpeedDetailedDashboard(QWidget):
 
         new_df = self._filter_data(new_df)
 
-        self._speed_grade_canvas = FigureCanvas(Figure(figsize = (6,2.5)))
-        self._speed_frequence_canvas = FigureCanvas(Figure(figsize = (6, 2.5)))
-        self._speed_elevation_grade_canvas = FigureCanvas(Figure(figsize = (6, 3)))
-        self._speed_over_time_canvas = FigureCanvas(Figure(figsize = (4, 6)))
-        self._speed_over_distance_canvas = FigureCanvas(Figure(figsize = (4, 6)))
+        canvas_factory = lambda w, h : FigureCanvas(Figure(figsize = (6,2.5)))
+
+        self._speed_grade_canvas = canvas_factory(6, 2.5)
+        self._speed_frequence_canvas = canvas_factory(6, 2.5)
+        self._speed_elevation_grade_canvas = canvas_factory(6, 3)
+        self._speed_over_time_canvas = canvas_factory(4, 6)
+        self._speed_over_distance_canvas = canvas_factory(4, 6)
         
         layout.addWidget(self._speed_grade_canvas, 0, 0)
         layout.addWidget(self._speed_elevation_grade_canvas, 0, 1)

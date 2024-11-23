@@ -10,7 +10,7 @@ from matplotlib.backends.backend_qtagg import \
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
-from PyQt6.QtWidgets import QGridLayout, QPushButton, QToolTip
+from PyQt6.QtWidgets import QPushButton, QToolTip
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
 
@@ -20,9 +20,11 @@ class ChartDashboard(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout(self)
         self._redraw = False
 
-        self._speed_chart_canvas = FigureCanvas(Figure(figsize=(14, 3.2)))
-        self._stats_time_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
-        self._elevation_distance_chart_canvas = FigureCanvas(Figure(figsize=(4, 3.2)))
+        canvas_factory = lambda w, h : FigureCanvas(Figure(figsize = (6,2.5)))
+        
+        self._speed_chart_canvas = canvas_factory(14, 3.2)
+        self._stats_time_chart_canvas = canvas_factory(4, 3.2)
+        self._elevation_distance_chart_canvas = canvas_factory(4, 3.2)
 
         self._grade_detailed_chart_button = QPushButton("Open advanced dashboard")
         self._grade_detailed_chart_button.setFixedSize(200, 30)
