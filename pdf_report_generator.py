@@ -17,7 +17,7 @@ class PdfReportGenerator:
                                   if not pd.isnull(x) else ''
                                   )
         p_df["Speed"] = round(p_df["Speed"], 2)
-        p_df["Speed ma"] = round(p_df["Speed ma"], 2)
+        p_df["Speed rollmean"] = round(p_df["Speed rollmean"], 2)
         p_df["Avg Speed"] = round(p_df["Avg Speed"], 2)
 
         return p_df.groupby(["KM"], as_index=False).last().to_html()
