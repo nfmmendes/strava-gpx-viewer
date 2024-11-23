@@ -40,6 +40,17 @@ class GradeDetailedDashboard(QWidget):
         self.setLayout(layout)
 
         ## Create charts
+        
+
+        self.create_charts(new_chart, data_frame)
+
+        self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+        self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
+
+    def create_charts(self, new_chart, data_frame):
+
         chart = self._grade_frequence_canvas.figure.subplots()
         count_series = round(100*data_frame["Elevation Gain"]/data_frame["Distance"], 1).value_counts()
         count_series = count_series[count_series > 10]
@@ -71,11 +82,6 @@ class GradeDetailedDashboard(QWidget):
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         chart.margins(y = 0.2)
-
-        self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
-        self._speed_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
-        self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
-        self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
 
 
 
