@@ -6,7 +6,7 @@ from scipy.stats import gaussian_kde
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvas
 from matplotlib.figure import Figure
-from PyQt6.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QGridLayout
+from PyQt6.QtWidgets import QWidget, QGridLayout
 
 class SpeedDetailedDashboard(QWidget):
     def __init__(self, data_frame):

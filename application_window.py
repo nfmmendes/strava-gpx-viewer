@@ -1,8 +1,3 @@
-import pandas as pd
-import numpy as np
-import datetime
-from xhtml2pdf import pisa
-import matplotlib.pyplot as plt
 from pdf_report_generator  import PdfReportGenerator
 from gpx_processor import get_data_frame_from_gpx_file, calculate_speed_data_frame
 
