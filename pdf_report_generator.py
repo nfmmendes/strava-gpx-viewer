@@ -8,7 +8,7 @@ class PdfReportGenerator:
     def __init__(self, df): 
         self._df = df
 
-    def generateHtmlFromDataFrame(self, df):
+    def _generate_html_from_data_frame(self, df):
         p_df = df.drop(["Distance", "Elevation Gain", "Delta Time"], axis = 1)
         p_df["Time"] = p_df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
         p_df["Tot. Distance"] = round(p_df["Tot. Distance"], 2)
@@ -22,7 +22,7 @@ class PdfReportGenerator:
 
         return p_df.groupby(["KM"], as_index=False).last().to_html()
 
-    def generateHtmlReport(self):
+    def _generate_html_report(self):
         return """<html><head><style>  
         table.dataframe { font-weight: medium; } 
         table.dataframe tr { padding-top: 4px; height: 18px; } 
@@ -41,7 +41,7 @@ class PdfReportGenerator:
         <pdf:nextpage>
         <h2> Summarized data </h2>
         <b>Last measurements before each 100 meters </b>""" \
-                +  self.generateHtmlFromDataFrame(self._df) +  "</body> </html>"
+                +  self._generate_html_from_data_frame(self._df) +  "</body> </html>"
 
 
     def generate(self, file_name):
@@ -50,7 +50,7 @@ class PdfReportGenerator:
             with open(file_name, "w+b") as file:        
                 try:
                     # convert HTML to PDF
-                    pisa_status = pisa.CreatePDF(self.generateHtmlReport(), dest=file)
+                    pisa_status = pisa.CreatePDF(self._generate_html_report(), dest=file)
                     file.close()
                     return pisa_status.err
                 except (IOError, OSError):
