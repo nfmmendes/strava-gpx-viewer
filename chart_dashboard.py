@@ -78,9 +78,12 @@ class ChartDashboard(QtWidgets.QWidget):
         summarized_df.loc[: ,"Distance"] = rolling_mean["Distance"]
         summarized_df.loc[:, "Elevation Gain"] = rolling_mean["Elevation Gain"]
 
-        grade_threshold = 0.5
-        while len(summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) > grade_threshold]) < 15:
-            grade_threshold = grade_threshold - 0.02 
+        minimum_measurements = 15
+        if len(summarized_df) < minimum_measurements:
+            return
+        
+        grades = abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]).sort_values(ascending=False)
+        grade_threshold = grades.iloc[minimum_measurements - 1] - 0.02
         cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
  
         chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
