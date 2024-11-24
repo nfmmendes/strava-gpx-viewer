@@ -14,19 +14,9 @@ class GradeDetailedDashboard(QWidget):
 
         self._tick_label_size = 8
 
-        ## Process data
-        intervals = np.arange(-10, 10.00001, 2)
-        intervals = np.append(np.array([-np.inf]), intervals)
-        intervals = np.append(intervals, np.array([np.inf]))
-        cuts = pd.cut(100*data_frame["Elevation Gain"]/data_frame["Distance"], intervals)
-        
-        new_chart = data_frame[["Elevation Gain", "Distance", "Delta Time"]].groupby(cuts, observed = True).sum()
-        new_chart["Speed"] = np.where(new_chart["Delta Time"] > 0, 3.6*new_chart["Distance"]/new_chart["Delta Time"], 0)
-        new_chart = new_chart[new_chart["Distance"] > 0]
-
+        ## Setup layout
         canvas_factory = lambda w, h : FigureCanvas(Figure(figsize = (6,2.5)))
 
-        ## Define the layout
         self._grade_frequence_canvas = canvas_factory(4, 3.2)
         self._speed_grade_canvas = canvas_factory(4,3.2)
         self._distance_grade_canvas = canvas_factory(4, 3.2)
@@ -38,29 +28,41 @@ class GradeDetailedDashboard(QWidget):
         layout.addWidget(self._time_grade_canvas)
 
         self.setLayout(layout)
-
-        ## Create charts
         
-
-        self.create_charts(new_chart, data_frame)
+        self._create_charts(data_frame)
 
         self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
         self._speed_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
         self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
         self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
 
-    def create_charts(self, new_chart, data_frame):
+    def _process_data(self, data_frame): 
+        ## Process data
+        intervals = np.arange(-10, 10.00001, 2)
+        intervals = np.append(np.array([-np.inf]), intervals)
+        intervals = np.append(intervals, np.array([np.inf]))
+        cuts = pd.cut(100*data_frame["Elevation Gain"]/data_frame["Distance"], intervals)
+        
+        new_data = data_frame[["Elevation Gain", "Distance", "Delta Time"]].groupby(cuts, observed = True).sum()
+        new_data["Speed"] = np.where(new_data["Delta Time"] > 0, 3.6*new_data["Distance"]/new_data["Delta Time"], 0)
+        new_data = new_data[new_data["Distance"] > 0]
+
+        return new_data
+
+    def _create_charts(self, df):
+        processed_df = self._process_data(df)
 
         chart = self._grade_frequence_canvas.figure.subplots()
-        count_series = round(100*data_frame["Elevation Gain"]/data_frame["Distance"], 1).value_counts()
+        count_series = round(100*df["Elevation Gain"]/df["Distance"], 1).value_counts()
         count_series = count_series[count_series > 10]
         chart.bar(x = count_series.index, height = count_series.values, width=0.1)
         chart.set_xlabel("Grade")
         chart.set_ylabel("Frequence")
         self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25)
 
+        interval_label = lambda x : f"[{x.left:.0f} , {x.right:.0f})"
         chart = self._speed_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left:.0f} , {x.right:.0f})" for x in new_chart.index] , new_chart["Speed"])
+        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Speed"])
         chart.set_xlabel("Grade intervals (%)")
         chart.set_ylabel("Speed (Km/h)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
@@ -68,7 +70,7 @@ class GradeDetailedDashboard(QWidget):
         chart.margins(y = 0.3)
 
         chart = self._distance_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left:.0f} , {x.right:.0f})" for x in new_chart.index] , new_chart["Distance"]/1000)
+        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Distance"]/1000)
         chart.set_xlabel("Grade intervals (%)")
         chart.set_ylabel("Distance (Km)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
@@ -76,7 +78,7 @@ class GradeDetailedDashboard(QWidget):
         chart.margins(y = 0.2)
 
         chart = self._time_grade_canvas.figure.subplots()
-        chart.bar([f"[{x.left:.0f} , {x.right:.0f})" for x in new_chart.index] , new_chart["Delta Time"]/60)
+        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Delta Time"]/60)
         chart.set_xlabel("Grade intervals (%)")
         chart.set_ylabel("Time (min)")
         chart.bar_label(chart.containers[0], fmt='%.2f')
