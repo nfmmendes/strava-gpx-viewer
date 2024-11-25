@@ -116,15 +116,16 @@ class ChartDashboard(QtWidgets.QWidget):
         lb = final_avg - 3*speed_std_dev
         ub = final_avg + 3*speed_std_dev
         
-        deviation = [min(1, (final_avg - x)/(final_avg - lb))/2 if x < final_avg else\
+        deviation = [min(1, (final_avg - x)/(final_avg - lb))/2 if x < final_avg else
                      0.5 + min(1, (x - final_avg)/(ub - final_avg))/2 for x in df["Speed"]]
 
         cmap = cm.coolwarm
         step_size = 20
         if len(df) > step_size:
             for i in range(step_size, len(df), step_size):
-                chart.fill_between(df.iloc[i - step_size: i]["Tot. Time"].dt.total_seconds()/60, df.iloc[i - step_size : i]["KM"],\
-                        color= cmap(1 - np.array(deviation[i - step_size : i]).mean()))
+                chart.fill_between(df.iloc[i - step_size: i]["Tot. Time"].dt.total_seconds()/60, 
+                                   df.iloc[i - step_size : i]["KM"],
+                                   color= cmap(1 - np.array(deviation[i - step_size : i]).mean()))
         
         chart.annotate('speed: red < average < blue', xy = (0.05, 1.05), xycoords='axes fraction')
 
@@ -134,9 +135,10 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.grid(color = 'green', linestyle = '--', linewidth = 0.3)
         chart.legend(loc="upper left")
 
+        positive_elevation_gain_df = df[df["Elevation Gain"] > 0]
         ax2 = chart.twinx()
-        ax2.plot(df[df["Elevation Gain"] > 0]["Tot. Time"].dt.total_seconds()/60, 
-                 df[df["Elevation Gain"] > 0]["Elevation Gain"].cumsum(), 
+        ax2.plot(positive_elevation_gain_df["Tot. Time"].dt.total_seconds()/60, 
+                 positive_elevation_gain_df["Elevation Gain"].cumsum(), 
                  color="#334455", label="Elevation Gain")
         ax2.set_ylabel("Elevation gain (m)")
         ax2.legend(loc="lower right")
