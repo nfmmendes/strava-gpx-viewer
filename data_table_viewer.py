@@ -21,16 +21,8 @@ class DataTableViewer(QWidget):
         self._number_of_pages = ceil(len(self._df)/self._page_size)
         self._current_page = 0
 
-        self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
-        self._df["Tot. Distance"] = round(self._df["Tot. Distance"], 2)
-        self._df["Tot. Time"] = self._df["Tot. Time"].apply(
-                lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
-                                  if not pd.isnull(x) else ''
-                                  )
-        self._df["Speed"] = round(self._df["Speed"], 2)
-        self._df["Speed rollmean"] = round(self._df["Speed rollmean"], 2)
-        self._df["Avg Speed"] = round(self._df["Avg Speed"], 2)
-
+        ## Clean the data, create a filter/page model and use it to fill the table. 
+        self._format_data()
         model = PandasModel(self._df.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
 
         self._page_model = PageModel(self._page_size, self)
@@ -83,6 +75,17 @@ class DataTableViewer(QWidget):
         self.layout.addWidget(self._export_to_excel_button)
 
         self.setLayout(self.layout)
+
+    def _format_data(self):
+        self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
+        self._df["Tot. Distance"] = round(self._df["Tot. Distance"], 2)
+        self._df["Tot. Time"] = self._df["Tot. Time"].apply(
+                lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
+                                  if not pd.isnull(x) else ''
+                                  )
+        self._df["Speed"] = round(self._df["Speed"], 2)
+        self._df["Speed rollmean"] = round(self._df["Speed rollmean"], 2)
+        self._df["Avg Speed"] = round(self._df["Avg Speed"], 2)
 
     def go_to_first_page(self):
         self._current_page = 0
