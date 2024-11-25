@@ -1,6 +1,3 @@
-
-import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 
 ### For embedding in Qt
@@ -45,7 +42,7 @@ class ChartDashboard(QtWidgets.QWidget):
                                 border: black solid 1px
                    }""")
                 
-    def speed_chart_hover(self, event):
+    def _speed_chart_hover(self, event):
         x, y = event.xdata, event.ydata
         text = ""
 
@@ -67,7 +64,7 @@ class ChartDashboard(QtWidgets.QWidget):
            self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
 
-    def plot_speed(self, df):
+    def _plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
 
@@ -106,11 +103,11 @@ class ChartDashboard(QtWidgets.QWidget):
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
-        self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self.speed_chart_hover)
+        self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self._speed_chart_hover)
  
         plot.figure.canvas.draw()
 
-    def plot_stats_over_time(self, df):
+    def _plot_stats_over_time(self, df):
         self._stats_time_chart_canvas.figure.clf()
         chart = self._stats_time_chart_canvas.figure.subplots()
 
@@ -153,7 +150,7 @@ class ChartDashboard(QtWidgets.QWidget):
         grade = min(max(grade, -12), 12) # Keeps the gra between -12 and 12
         return (12 + grade)/24 # A value between 0 and 1
 
-    def plot_elevation_over_distance(self, df):
+    def _plot_elevation_over_distance(self, df):
         self._elevation_distance_chart_canvas.figure.clf()
         chart = self._elevation_distance_chart_canvas.figure.subplots()
 
@@ -181,7 +178,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._advanced_dashboard.show() 
     
     def initialize_charts(self, df):
-        self.plot_speed(df)
-        self.plot_stats_over_time(df)
-        self.plot_elevation_over_distance(df)
+        self._plot_speed(df)
+        self._plot_stats_over_time(df)
+        self._plot_elevation_over_distance(df)
         self._grade_detailed_chart_button.setVisible(True)
