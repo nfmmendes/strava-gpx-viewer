@@ -1,8 +1,6 @@
 import pandas as pd
 from math import ceil
 
-from PyQt6.QtCore import QModelIndex
-
 ### For embedding in Qt
 from PyQt6.QtWidgets import (
     QWidget,
@@ -35,7 +33,7 @@ class DataTableViewer(QWidget):
         ## Clean the data, create a filter/page model and use it to fill the table. 
         self._format_data()
         model = PandasModel(self._df.drop(columns=["Elevation Gain", "Delta Time"], axis=1))
-
+        
         self._page_model = PageModel(self._page_size, self)
         self._page_model.setSourceModel(model)
         self._page_model.setCurrentPage(self._current_page)
@@ -91,8 +89,11 @@ class DataTableViewer(QWidget):
     def _table_clicked(self, index):
         
         model = self._view.model()
-        latitude = model.index(index.row(), 1).data()
-        longitude = model.index(index.row(), 2).data()
+        
+        latitude = model.data_by_column_name(index.row(), 'Latitude')
+        longitude = model.data_by_column_name(index.row(), 'Longitude')
+
+        print(latitude, longitude)
 
     def _format_data(self):
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
