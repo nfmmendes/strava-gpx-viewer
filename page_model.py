@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QSortFilterProxyModel
+from PyQt6.QtCore import QSortFilterProxyModel, Qt
 
 class PageModel(QSortFilterProxyModel):
     def __init__(self, max_rows=50, parent=None):
@@ -7,6 +7,7 @@ class PageModel(QSortFilterProxyModel):
         self._current_page = -1
         # the model is empty, the row range is therefore invalid
         self.row_range = range(0)
+
 
     def setMaxRows(self, max_rows):
         model_rows_count = self.sourceModel().rowCount()
@@ -55,5 +56,13 @@ class PageModel(QSortFilterProxyModel):
         else:
             self.setCurrentPage(0)
 
+        self._headers = [model.headerData(column, Qt.Orientation.Horizontal, Qt.ItemDataRole.DisplayRole)  
+                         for column in range(model.columnCount())]
         self.invalidateFilter()
 
+    def data_by_column_name(self, row: int, columnName: str):
+       column_index = self._headers.index(columnName)
+       if column_index >= 0:
+           return self.index(row, column_index).data()
+       
+       return None
