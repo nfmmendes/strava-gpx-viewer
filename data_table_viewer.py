@@ -1,8 +1,19 @@
 import pandas as pd
 from math import ceil
 
+from PyQt6.QtCore import QModelIndex
+
 ### For embedding in Qt
-from PyQt6.QtWidgets import QWidget, QTableView, QLabel, QPushButton, QFileDialog, QComboBox, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import (
+    QWidget,
+    QTableView,
+    QLabel, 
+    QPushButton, 
+    QFileDialog, 
+    QComboBox, 
+    QVBoxLayout, 
+    QHBoxLayout
+)
 
 from pandas_model import PandasModel
 from page_model import PageModel
@@ -29,9 +40,10 @@ class DataTableViewer(QWidget):
         self._page_model.setSourceModel(model)
         self._page_model.setCurrentPage(self._current_page)
 
-        view = QTableView()
-        view.setModel(self._page_model)
-        view.resize(1024, 600)
+        self._view = QTableView()
+        self._view.setModel(self._page_model)
+        self._view.doubleClicked.connect(self._table_clicked)
+        self._view.resize(1024, 600)
 
         self._page_size_combobox = QComboBox()
         self._page_size_combobox.setFixedSize(100, 30)
@@ -70,11 +82,17 @@ class DataTableViewer(QWidget):
 
         self.layout.addWidget(QLabel("Rows by page:"))
         self.layout.addWidget(self._page_size_combobox, 0)
-        self.layout.addWidget(view)
+        self.layout.addWidget(self._view)
         self.layout.addLayout(pagination_buttons_layout)
         self.layout.addWidget(self._export_to_excel_button)
 
         self.setLayout(self.layout)
+
+    def _table_clicked(self, index):
+        
+        model = self._view.model()
+        latitude = model.index(index.row(), 1).data()
+        longitude = model.index(index.row(), 2).data()
 
     def _format_data(self):
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
