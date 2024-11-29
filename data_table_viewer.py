@@ -72,6 +72,11 @@ class DataTableViewer(QWidget):
 
         self._pagination_label = QLabel(f"Page {self._current_page + 1} of {self._number_of_pages}")
 
+        self._show_on_map_button = QPushButton("Show on map")
+        self._show_on_map_button.setFixedSize(100, 30)
+        self._show_on_map_button.clicked.connect(self._show_on_map_button_clicked)
+
+
         pagination_buttons_layout = QHBoxLayout()
         pagination_buttons_layout.addWidget(self._first_page_button)
         pagination_buttons_layout.addWidget(self._previous_page_button)
@@ -79,6 +84,7 @@ class DataTableViewer(QWidget):
         pagination_buttons_layout.addWidget(self._next_page_button)
         pagination_buttons_layout.addWidget(self._last_page_button)
         pagination_buttons_layout.addStretch()
+        pagination_buttons_layout.addWidget(self._show_on_map_button)
 
         self.layout.addWidget(QLabel("Rows by page:"))
         self.layout.addWidget(self._page_size_combobox, 0)
@@ -94,8 +100,6 @@ class DataTableViewer(QWidget):
         
         latitude = model.data_by_column_name(index.row(), 'Latitude')
         longitude = model.data_by_column_name(index.row(), 'Longitude')
-
-        print(latitude, longitude)
 
         m = folium.Map(
                 location=[latitude, longitude], zoom_start=13
@@ -162,3 +166,34 @@ class DataTableViewer(QWidget):
         file_name, _ = QFileDialog.getSaveFileName(self, "Export data frame", "", "Excel Files(*.xlsx)")
         if file_name:
             self._df.to_excel(file_name)
+
+    def _show_on_map_button_clicked(self):
+        points = []
+        zooms_by_number_of_points = {50: 18, 100: 17, 200: 16, 500: 13, 1000: 11}
+        model = self._view.model()
+        if model.rowCount() == 0:
+            return
+        
+        for i in range(model.rowCount()):
+            latitude = float(model.data_by_column_name(i, 'Latitude'))
+            longitude = float(model.data_by_column_name(i, 'Longitude'))
+            points.append([latitude, longitude])
+
+        half = int(len(points)/2)
+        m = folium.Map(
+                location=[points[half][0], points[half][1]], zoom_start=zooms_by_number_of_points[self._page_size]
+        )
+        
+        folium.PolyLine(points, color='red', weight=4.5, opacity=.5).add_to(m)
+
+        data = io.BytesIO()
+        m.save(data, close_file=False)
+
+        self._map = qtweb.QWebEngineView()
+        self._map.setHtml(data.getvalue().decode())
+        self._map.resize(800, 640)
+        self._map.show()
+
+
+
+        
