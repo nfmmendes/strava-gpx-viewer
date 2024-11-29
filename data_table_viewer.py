@@ -1,7 +1,9 @@
 import pandas as pd
 from math import ceil
+import folium
+import io
 
-### For embedding in Qt
+import PyQt6.QtWebEngineWidgets as qtweb
 from PyQt6.QtWidgets import (
     QWidget,
     QTableView,
@@ -94,6 +96,19 @@ class DataTableViewer(QWidget):
         longitude = model.data_by_column_name(index.row(), 'Longitude')
 
         print(latitude, longitude)
+
+        m = folium.Map(
+                location=[latitude, longitude], zoom_start=13
+        )
+        folium.Marker(location=[latitude, longitude]).add_to(m)
+
+        data = io.BytesIO()
+        m.save(data, close_file=False)
+
+        self._map = qtweb.QWebEngineView()
+        self._map.setHtml(data.getvalue().decode())
+        self._map.resize(640, 480)
+        self._map.show()
 
     def _format_data(self):
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
