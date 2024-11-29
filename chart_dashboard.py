@@ -8,6 +8,9 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
 from PyQt6.QtWidgets import QPushButton, QToolTip
+import folium
+import io
+import PyQt6.QtWebEngineWidgets as qtweb
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
 
@@ -64,12 +67,44 @@ class ChartDashboard(QtWidgets.QWidget):
            self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
 
+    def _speed_chart_click(self ,event):
+        if not event.dblclick:
+            return 
+        
+        central_index = abs(self._speed_chart_data['KM'] - event.xdata).idxmin()
+        
+        points = []
+        initial_index = max(central_index - 150, 0)
+        final_index = min(central_index + 150, len(self._speed_chart_data) - 1)
+        
+        for i in range(initial_index, final_index):
+            latitude = float(self._speed_chart_data.iloc[i]['Latitude'])
+            longitude = float(self._speed_chart_data.iloc[i]['Longitude'])
+            points.append([latitude, longitude])
+
+        half = int(len(points)/2)
+        m = folium.Map(
+                location=[points[half][0], points[half][1]], zoom_start= 15
+        )
+        
+        folium.PolyLine(points, color='red', weight=4.5, opacity=.5).add_to(m)
+
+        data = io.BytesIO()
+        m.save(data, close_file=False)
+
+        self._map = qtweb.QWebEngineView()
+        self._map.setHtml(data.getvalue().decode())
+        self._map.resize(800, 640)
+        self._map.show()
+        
+
     def _plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
 
         # Clean elevation grade data
-        summarized_df = df[["KM", "Elevation Gain", "Distance", "Delta Time", "Avg Speed", "Speed rollmean"]]
+        summarized_df = df[["Latitude", "Longitude", "KM", "Elevation Gain", 
+                            "Distance", "Delta Time", "Avg Speed", "Speed rollmean"]]
 
         rolling_mean = summarized_df[["Distance", "Elevation Gain"]].rolling(20).mean()
         summarized_df.loc[: ,"Distance"] = rolling_mean["Distance"]
@@ -104,6 +139,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
         self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self._speed_chart_hover)
+        self._speed_chart_canvas.figure.canvas.mpl_connect('button_press_event', self._speed_chart_click)
  
         plot.figure.canvas.draw()
 
