@@ -6,3 +6,5 @@ pyqt6
 xhtml2pdf
 openpyxl
 scipy
+folium
+PyQt6-WebEngine
