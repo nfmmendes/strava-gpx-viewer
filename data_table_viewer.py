@@ -1,9 +1,6 @@
 import pandas as pd
 from math import ceil
-import folium
-import io
 
-import PyQt6.QtWebEngineWidgets as qtweb
 from PyQt6.QtWidgets import (
     QWidget,
     QTableView,
@@ -15,6 +12,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout
 )
 
+from map_viewer import MapViewer
 from pandas_model import PandasModel
 from page_model import PageModel
 
@@ -101,18 +99,8 @@ class DataTableViewer(QWidget):
         latitude = model.data_by_column_name(index.row(), 'Latitude')
         longitude = model.data_by_column_name(index.row(), 'Longitude')
 
-        m = folium.Map(
-                location=[latitude, longitude], zoom_start=13
-        )
-        folium.Marker(location=[latitude, longitude]).add_to(m)
-
-        data = io.BytesIO()
-        m.save(data, close_file=False)
-
-        self._map = qtweb.QWebEngineView()
-        self._map.setHtml(data.getvalue().decode())
-        self._map.resize(640, 480)
-        self._map.show()
+        self._map_viewer = MapViewer()
+        self._map_viewer.show_maker(latitude, longitude)
 
     def _format_data(self):
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
@@ -180,20 +168,6 @@ class DataTableViewer(QWidget):
             points.append([latitude, longitude])
 
         half = int(len(points)/2)
-        m = folium.Map(
-                location=[points[half][0], points[half][1]], zoom_start=zooms_by_number_of_points[self._page_size]
-        )
-        
-        folium.PolyLine(points, color='red', weight=4.5, opacity=.5).add_to(m)
-
-        data = io.BytesIO()
-        m.save(data, close_file=False)
-
-        self._map = qtweb.QWebEngineView()
-        self._map.setHtml(data.getvalue().decode())
-        self._map.resize(800, 640)
-        self._map.show()
-
-
-
+        self._map_viewer = MapViewer()
+        self._map_viewer.show_poly_line(points, zooms_by_number_of_points[self._page_size])
         

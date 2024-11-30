@@ -8,9 +8,7 @@ from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
 from PyQt6.QtWidgets import QPushButton, QToolTip
-import folium
-import io
-import PyQt6.QtWebEngineWidgets as qtweb
+from map_viewer import MapViewer
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
 
@@ -67,22 +65,6 @@ class ChartDashboard(QtWidgets.QWidget):
            self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
 
-    def _show_track_on_map(self, points): 
-        half = int(len(points)/2)
-        m = folium.Map(
-                location=[points[half][0], points[half][1]], zoom_start= 15
-        )
-        
-        folium.PolyLine(points, color='red', weight=4.5, opacity=.5).add_to(m)
-
-        data = io.BytesIO()
-        m.save(data, close_file=False)
-
-        self._map = qtweb.QWebEngineView()
-        self._map.setHtml(data.getvalue().decode())
-        self._map.resize(800, 640)
-        self._map.show()
-
     def _speed_chart_click(self ,event):
         if not event.dblclick:
             return 
@@ -98,7 +80,8 @@ class ChartDashboard(QtWidgets.QWidget):
             longitude = float(self._speed_chart_data.iloc[i]['Longitude'])
             points.append([latitude, longitude])
         
-        self._show_track_on_map(points)
+        self._map_viewer = MapViewer()
+        self._map_viewer.show_poly_line(points)
 
     def _plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
