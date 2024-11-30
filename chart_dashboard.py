@@ -11,6 +11,7 @@ from PyQt6.QtWidgets import QPushButton, QToolTip
 from map_viewer import MapViewer
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
+from chart_range_selector import ChartRangeSelector
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
@@ -83,6 +84,19 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
 
+    def select_callback(self, eclick, erelease):
+        initial_index = abs(self._speed_chart_data['KM'] - eclick.xdata).idxmin()
+        final_index = abs(self._speed_chart_data['KM'] - erelease.xdata).idxmin()
+        
+        points = []        
+        for i in range(initial_index, final_index):
+            latitude = float(self._speed_chart_data.iloc[i]['Latitude'])
+            longitude = float(self._speed_chart_data.iloc[i]['Longitude'])
+            points.append([latitude, longitude])
+        
+        self._map_viewer = MapViewer()
+        self._map_viewer.show_poly_line(points)
+
     def _plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
@@ -109,6 +123,8 @@ class ChartDashboard(QtWidgets.QWidget):
         chart.set_ylabel("Speed (Km/h)")
         chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
         chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
+
+        self._chart_range_selector = ChartRangeSelector(chart, self.select_callback)
 
         ax2 = chart.twinx()
         ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
