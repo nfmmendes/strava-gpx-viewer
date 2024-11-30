@@ -121,7 +121,8 @@ class ChartDashboard(QtWidgets.QWidget):
 
         self._speed_chart_data = cleaned_df
 
-        self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.2)
+        self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.1)
+        self._speed_chart_canvas.figure.tight_layout()
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
         self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self._speed_chart_hover)
         self._speed_chart_canvas.figure.canvas.mpl_connect('button_press_event', self._speed_chart_click)
