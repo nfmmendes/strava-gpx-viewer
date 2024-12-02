@@ -72,27 +72,21 @@ class ChartDashboard(QtWidgets.QWidget):
         
         central_index = abs(self._speed_chart_data['KM'] - event.xdata).idxmin()
         
-        points = []
-        initial_index = max(central_index - 150, 0)
-        final_index = min(central_index + 150, len(self._speed_chart_data) - 1)
+        start = max(central_index - 150, 0)
+        end = min(central_index + 150, len(self._speed_chart_data) - 1)
         
-        for i in range(initial_index, final_index):
-            latitude = float(self._speed_chart_data.iloc[i]['Latitude'])
-            longitude = float(self._speed_chart_data.iloc[i]['Longitude'])
-            points.append([latitude, longitude])
-        
+        lat_long_df = self._speed_chart_data.iloc[start : end][['Latitude', 'Longitude']]
+        points = list(zip(lat_long_df['Latitude'], lat_long_df['Longitude']))
+
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
 
     def select_callback(self, eclick, erelease):
-        initial_index = abs(self._speed_chart_data['KM'] - eclick.xdata).idxmin()
-        final_index = abs(self._speed_chart_data['KM'] - erelease.xdata).idxmin()
+        start = abs(self._speed_chart_data['KM'] - eclick.xdata).idxmin()
+        end = abs(self._speed_chart_data['KM'] - erelease.xdata).idxmin()
         
-        points = []        
-        for i in range(initial_index, final_index):
-            latitude = float(self._speed_chart_data.iloc[i]['Latitude'])
-            longitude = float(self._speed_chart_data.iloc[i]['Longitude'])
-            points.append([latitude, longitude])
+        lat_long_df = self._speed_chart_data.iloc[start : end][['Latitude', 'Longitude']]
+        points = list(zip(lat_long_df['Latitude'], lat_long_df['Longitude']))
         
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
