@@ -61,15 +61,15 @@ class GradeDetailedDashboard(QWidget):
         self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25)
 
         interval_label = lambda x : f"[{x.left:.0f} , {x.right:.0f})"
-        intervals = [interval_label(x) for x in processed_df.index]
+        self._intervals = [interval_label(x) for x in processed_df.index]
 
-        self._create_bar_chart(self._speed_grade_canvas, intervals, processed_df["Speed"], "Speed (Km/h)", 0.3)
-        self._create_bar_chart(self._distance_grade_canvas, intervals, processed_df["Distance"]/1000, "Distance (Km)")
-        self._create_bar_chart(self._time_grade_canvas, intervals, processed_df["Delta Time"]/60, "Time (min)")
+        self._create_bar_chart(self._speed_grade_canvas, processed_df["Speed"], "Speed (Km/h)", 0.3)
+        self._create_bar_chart(self._distance_grade_canvas, processed_df["Distance"]/1000, "Distance (Km)")
+        self._create_bar_chart(self._time_grade_canvas, processed_df["Delta Time"]/60, "Time (min)")
 
-    def _create_bar_chart(self, canvas, x_values, y_values, y_label, y_margin = 0.2):
+    def _create_bar_chart(self, canvas, y_values, y_label, y_margin = 0.2):
         chart = canvas.figure.subplots()
-        chart.bar(x_values , y_values)
+        chart.bar(self._intervals , y_values)
         chart.set_xlabel("Grade intervals (%)")
         chart.set_ylabel(y_label)
         chart.bar_label(chart.containers[0], fmt='%.2f')
