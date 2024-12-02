@@ -61,29 +61,17 @@ class GradeDetailedDashboard(QWidget):
         self._grade_frequence_canvas.figure.subplots_adjust(bottom=0.25)
 
         interval_label = lambda x : f"[{x.left:.0f} , {x.right:.0f})"
-        chart = self._speed_grade_canvas.figure.subplots()
-        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Speed"])
+        intervals = [interval_label(x) for x in processed_df.index]
+
+        self._create_bar_chart(self._speed_grade_canvas, intervals, processed_df["Speed"], "Speed (Km/h)", 0.3)
+        self._create_bar_chart(self._distance_grade_canvas, intervals, processed_df["Distance"]/1000, "Distance (Km)")
+        self._create_bar_chart(self._time_grade_canvas, intervals, processed_df["Delta Time"]/60, "Time (min)")
+
+    def _create_bar_chart(self, canvas, x_values, y_values, y_label, y_margin = 0.2):
+        chart = canvas.figure.subplots()
+        chart.bar(x_values , y_values)
         chart.set_xlabel("Grade intervals (%)")
-        chart.set_ylabel("Speed (Km/h)")
+        chart.set_ylabel(y_label)
         chart.bar_label(chart.containers[0], fmt='%.2f')
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        chart.margins(y = 0.3)
-
-        chart = self._distance_grade_canvas.figure.subplots()
-        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Distance"]/1000)
-        chart.set_xlabel("Grade intervals (%)")
-        chart.set_ylabel("Distance (Km)")
-        chart.bar_label(chart.containers[0], fmt='%.2f')
-        chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        chart.margins(y = 0.2)
-
-        chart = self._time_grade_canvas.figure.subplots()
-        chart.bar([interval_label(x) for x in processed_df.index] , processed_df["Delta Time"]/60)
-        chart.set_xlabel("Grade intervals (%)")
-        chart.set_ylabel("Time (min)")
-        chart.bar_label(chart.containers[0], fmt='%.2f')
-        chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
-        chart.margins(y = 0.2)
-
-
-
+        chart.margins(y = y_margin)
