@@ -90,6 +90,7 @@ class ChartDashboard(QtWidgets.QWidget):
         
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
+        self._chart_range_selector.reset()
 
     def _plot_speed(self, df):
         self._speed_chart_canvas.figure.clf()
