@@ -100,7 +100,7 @@ class DataTableViewer(QWidget):
         longitude = model.data_by_column_name(index.row(), 'Longitude')
 
         self._map_viewer = MapViewer()
-        self._map_viewer.show_maker(latitude, longitude)
+        self._map_viewer.show_marker(latitude, longitude)
 
     def _format_data(self):
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
