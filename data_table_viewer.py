@@ -9,7 +9,8 @@ from PyQt6.QtWidgets import (
     QFileDialog, 
     QComboBox, 
     QVBoxLayout, 
-    QHBoxLayout
+    QHBoxLayout,
+    QAbstractItemView
 )
 
 from map_viewer import MapViewer
@@ -41,6 +42,7 @@ class DataTableViewer(QWidget):
         self._view = QTableView()
         self._view.setModel(self._page_model)
         self._view.doubleClicked.connect(self._table_clicked)
+        self._view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self._view.resize(1024, 600)
 
         self._page_size_combobox = QComboBox()
@@ -73,7 +75,6 @@ class DataTableViewer(QWidget):
         self._show_on_map_button = QPushButton("Show on map")
         self._show_on_map_button.setFixedSize(100, 30)
         self._show_on_map_button.clicked.connect(self._show_on_map_button_clicked)
-
 
         pagination_buttons_layout = QHBoxLayout()
         pagination_buttons_layout.addWidget(self._first_page_button)
