@@ -158,7 +158,6 @@ class DataTableViewer(QWidget):
 
     def _show_on_map_button_clicked(self):
         points = []
-        zooms_by_number_of_points = {50: 18, 100: 17, 200: 16, 500: 13, 1000: 11}
         model = self._view.model()
         if model.rowCount() == 0:
             return
@@ -170,5 +169,5 @@ class DataTableViewer(QWidget):
 
         half = int(len(points)/2)
         self._map_viewer = MapViewer()
-        self._map_viewer.show_poly_line(points, zooms_by_number_of_points[self._page_size])
+        self._map_viewer.show_poly_line(points, 10)
         

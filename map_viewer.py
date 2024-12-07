@@ -9,12 +9,12 @@ class MapViewer:
         pass
 
     def show_marker(self, lat, long):
-        m = folium.Map(location=[lat, long], zoom_start=13)
+        map = folium.Map(location=[lat, long], zoom_start=13)
         
-        folium.Marker(location=[lat, long]).add_to(m)
+        folium.Marker(location=[lat, long]).add_to(map)
 
         data = io.BytesIO()
-        m.save(data, close_file=False)
+        map.save(data, close_file=False)
 
         self._web_viewer = qtweb.QWebEngineView()
         self._web_viewer.setHtml(data.getvalue().decode())
@@ -34,6 +34,7 @@ class MapViewer:
         icon_end = DivIcon(icon_size=(36,36), icon_anchor=(0,0), html=div('End'))
         folium.Marker(location=points[0], icon=icon_start).add_to(self._map)
         folium.Marker(location=points[-1], icon = icon_end).add_to(self._map)
+        self._map.fit_bounds([min(points), max(points)])
         
         data = io.BytesIO()
         self._map.save(data, close_file=False)
