@@ -3,4 +3,6 @@
 *.swp
 *~
 *chart.png
+build
+dist
 __pycache__/
