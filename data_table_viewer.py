@@ -43,6 +43,7 @@ class DataTableViewer(QWidget):
         self._view.setModel(self._page_model)
         self._view.doubleClicked.connect(self._table_clicked)
         self._view.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self._view.setSortingEnabled(True)
         self._view.resize(1024, 600)
 
         self._page_size_combobox = QComboBox()
