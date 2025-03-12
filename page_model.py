@@ -4,10 +4,16 @@ class PageModel(QSortFilterProxyModel):
     def __init__(self, max_rows=50, parent=None):
         super().__init__(parent)
         self._max_rows = max(1, max_rows)
+        self.setDynamicSortFilter(True)
         self._current_page = -1
         # the model is empty, the row range is therefore invalid
         self.row_range = range(0)
 
+    def sort(self, column, order):
+        reverse = (order == Qt.SortOrder.DescendingOrder)
+        self.sourceModel()._data.sort_values(by = self.sourceModel()._data.columns[column], ascending= reverse, inplace=True)
+        self.layoutChanged.emit()
+        self.invalidateFilter()
 
     def setMaxRows(self, max_rows):
         model_rows_count = self.sourceModel().rowCount()
