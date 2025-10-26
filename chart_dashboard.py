@@ -93,10 +93,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer.show_poly_line(points)
         self._chart_range_selector.reset()
 
-    def _plot_speed(self, df):
-        self._speed_chart_canvas.figure.clf()
-        chart = self._speed_chart_canvas.figure.subplots()
-
+    def _clean_speed_chart_data(self, df):
         # Clean elevation grade data
         summarized_df = df[["Latitude", "Longitude", "KM", "Elevation Gain", 
                             "Distance", "Delta Time", "Avg Speed", "Speed rollmean"]]
@@ -111,7 +108,13 @@ class ChartDashboard(QtWidgets.QWidget):
         
         grades = abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]).sort_values(ascending=False)
         grade_threshold = grades.iloc[minimum_measurements - 1] - 0.02
-        cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
+        return summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
+
+    def _plot_speed(self, df):
+        self._speed_chart_canvas.figure.clf()
+        chart = self._speed_chart_canvas.figure.subplots()
+
+        cleaned_df = self._clean_speed_chart_data(df)
  
         (avg_line, ) = chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
         (instant_line, )= chart.plot(cleaned_df["KM"], cleaned_df["Speed rollmean"], label="instantaneous")
