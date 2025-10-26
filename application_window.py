@@ -6,6 +6,7 @@ from matplotlib.backends.qt_compat import QtWidgets
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QFileDialog, QGridLayout
 from chart_dashboard import ChartDashboard
 from data_table_viewer import DataTableViewer
+from threading import Thread
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -94,8 +95,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if len(fname) > 0: 
             self._df = get_data_frame_from_gpx_file(fname)
             calculate_speed_data_frame(self._df)
-            self.initialize_stats(self._df)
-            self._dashboard.initialize_charts(self._df)
+            Thread(target = self.initialize_stats, args=[self._df]).start()                                               
+            Thread(target = self._dashboard.initialize_charts, args=[self._df]).start()                                                                     
 
         self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)

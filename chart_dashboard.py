@@ -1,4 +1,5 @@
 import numpy as np
+from threading import Thread
 
 ### For embedding in Qt
 from matplotlib.backends.backend_qtagg import FigureCanvas
@@ -213,7 +214,13 @@ class ChartDashboard(QtWidgets.QWidget):
         self._advanced_dashboard.show() 
     
     def initialize_charts(self, df):
-        self._plot_speed(df)
-        self._plot_stats_over_time(df)
-        self._plot_elevation_over_distance(df)
+        threads = []
+        threads.append(Thread(target=self._plot_speed, args=[df]))
+        threads.append(Thread(target=self._plot_stats_over_time, args=[df]))
+        threads.append(Thread(target=self._plot_elevation_over_distance, args=[df]))
         self._grade_detailed_chart_button.setVisible(True)
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
