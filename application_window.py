@@ -15,7 +15,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self._main)
         layout = QtWidgets.QVBoxLayout(self._main)
 
-        self.setStyleSheet(".stats-title { font-weight: bold; }") 
+        self.setStyleSheet("""ApplicationWindow { background-color: white; } 
+                           .stats-title { font-weight: bold; }
+                           """
+                           ) 
 
         self._export_to_pdf_button = QPushButton("Export to pdf")
         self._export_to_pdf_button.setFixedSize(100, 32)
