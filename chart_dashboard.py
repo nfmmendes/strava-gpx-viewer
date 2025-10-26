@@ -113,33 +113,69 @@ class ChartDashboard(QtWidgets.QWidget):
         grade_threshold = grades.iloc[minimum_measurements - 1] - 0.02
         cleaned_df = summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
  
-        chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
-        plot, = chart.plot(cleaned_df["KM"], cleaned_df["Speed rollmean"], label="instantaneous")
+        (avg_line, ) = chart.plot(cleaned_df["KM"], cleaned_df["Avg Speed"], label="average")
+        (instant_line, )= chart.plot(cleaned_df["KM"], cleaned_df["Speed rollmean"], label="instantaneous")
         chart.set_xlabel("Accumulated distance (Km)")
         chart.set_ylabel("Speed (Km/h)")
-        chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
-        chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
+        avg_fill = chart.fill_between(df["KM"], df["Avg Speed"], alpha=0.3)
+        instant_fill = chart.fill_between(df["KM"], df["Speed rollmean"], alpha=0.3)
 
         self._chart_range_selector = ChartRangeSelector(chart, self.select_callback)
 
         ax2 = chart.twinx()
-        ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
-                 color="#334455", label="Grade")
+        (elevation_line, ) = ax2.plot(cleaned_df["KM"], 100*cleaned_df["Elevation Gain"]/cleaned_df["Distance"], 
+                                    color="#334455", label="Grade")
         ax2.set_ylabel("Grade (%)")
 
         lines, labels = chart.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
-        ax2.legend(lines + lines2, labels + labels2, loc="upper right")
+        leg = ax2.legend(lines + lines2, labels + labels2, loc="upper right")
 
         self._speed_chart_data = cleaned_df
+
+        chart.set_picker(True)
+        ax2.set_picker(True)
+        self._map_legend_to_ax = {}  # Will map legend lines to original lines.
+
+        pickradius = 5  # Points (Pt). How close the click needs to be to trigger an event.
+
+        for legend_line, ax_line in zip(leg.get_lines(), [avg_line, instant_line, elevation_line]):
+            legend_line.set_picker(pickradius)  # Enable picking on the legend line.
+            self._map_legend_to_ax[legend_line] = []
+            self._map_legend_to_ax[legend_line].append(ax_line)
+        for legend_line, fill_line in zip(leg.get_lines(), [avg_fill, instant_fill, None]):
+            if fill_line is None:
+                continue
+            self._map_legend_to_ax[legend_line].append(fill_line)
+
 
         self._speed_chart_canvas.figure.subplots_adjust(bottom=0.15, hspace=0.1)
         self._speed_chart_canvas.figure.tight_layout()
         self._speed_chart_canvas.figure.savefig("./speed_chart.png")
         self._speed_chart_canvas.figure.canvas.mpl_connect('motion_notify_event', self._speed_chart_hover)
         self._speed_chart_canvas.figure.canvas.mpl_connect('button_press_event', self._speed_chart_click)
+        self._speed_chart_canvas.figure.canvas.mpl_connect('pick_event', self.on_speed_pick)  
  
-        plot.figure.canvas.draw()
+        instant_line.figure.canvas.draw()
+
+    def on_speed_pick(self, event):
+        # On the pick event, find the original line corresponding to the legend
+        # proxy line, and toggle its visibility.
+        legend_line = event.artist
+
+        # Do nothing if the source of the event is not a legend line.
+        if legend_line not in self._map_legend_to_ax:
+            return
+
+        for el in self._map_legend_to_ax[legend_line]:
+            visible = not el.get_visible()
+            el.set_visible(visible)
+            # Change the alpha on the line in the legend, so we can see what lines
+            # have been toggled.
+            legend_line.set_alpha(1.0 if visible else 0.2)
+
+        self._speed_chart_canvas.figure.canvas.draw()
+
 
     def _plot_stats_over_time(self, df):
         self._stats_time_chart_canvas.figure.clf()
