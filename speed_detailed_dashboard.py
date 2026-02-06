@@ -1,6 +1,8 @@
 import threading
 import numpy as np
 import pandas as pd
+from pandas import DataFrame, Series
+from matplotlib.axes import Axes
 from scipy.stats import gaussian_kde
 
 from matplotlib.backends.qt_compat import QtWidgets
@@ -9,7 +11,14 @@ from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget, QGridLayout
 
 class SpeedDetailedDashboard(QWidget):
-    def __init__(self, data_frame):
+    def __init__(self, data_frame: DataFrame):
+        """
+        Class constructor
+
+        :param data_frame: The data frame to be used in the dashboard.
+        :type data_frame: pandas.DataFrame
+        """
+
         super().__init__()
         layout = QGridLayout(self)
         self._redraw = False
@@ -66,7 +75,15 @@ class SpeedDetailedDashboard(QWidget):
         t2.start()
 
 
-    def _render_speed_frequence_chart(self, new_df):
+    def _render_speed_frequence_chart(self, new_df: DataFrame) -> None:
+        """
+        Render the speed frequence chart
+        
+        :param new_df: The data frame to be used in the chart.
+        :type new_df: pandas.DataFrame
+        :return: None
+        :rtype: None
+        """
         chart = self._speed_frequence_canvas.figure.subplots()
 
         count_series = round(new_df['Speed'], 1).value_counts()
@@ -78,7 +95,13 @@ class SpeedDetailedDashboard(QWidget):
         self._speed_frequence_canvas.figure.subplots_adjust(bottom=0.25)
 
 
-    def _render_interval_charts(self, new_df):
+    def _render_interval_charts(self, new_df: DataFrame) -> None:
+        """
+        Render interval charts/histograms.
+        
+        :param new_df: The data frame to be used in the charts.
+        :type new_df: pandas.DataFrame
+        """
         
         chart = self._speed_over_time_canvas.figure.subplots()
         chart.bar([f"[{x.left} , {x.right})" for x in new_df.index] , new_df["Delta Time"]/60)
@@ -98,7 +121,15 @@ class SpeedDetailedDashboard(QWidget):
         chart.tick_params(axis='x', which='major', labelsize= self._tick_label_size)
         self._speed_over_distance_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.25)       
             
-    def _define_speed_cuts(self, df):
+    def _define_speed_cuts(self, df: DataFrame) -> DataFrame:
+        """
+        Define the speed intervals to be used in the interval charts.
+        
+        :param df: The data frame to generate the cuts.
+        :type df: pandas.DataFrame
+        return: The total distance and delta time grouped by speed intervals.
+        :rtype: pandas.DataFrame
+        """
         intervals = np.arange(10, 50.00001, 5)
         intervals = np.append(0, intervals)
         intervals = np.append(intervals, np.arange(50.0001, 100, 10))
@@ -107,7 +138,15 @@ class SpeedDetailedDashboard(QWidget):
         return df[["Distance", "Delta Time"]].copy(deep= True).groupby(cuts, observed = True).sum()
 
 
-    def _filter_data(self, df):
+    def _filter_data(self, df: DataFrame) -> DataFrame:
+        """
+        Filter the data frame to remove outliers in speed and grade.
+        
+        :param df: The data frame to be filtered.
+        :type df: pandas.DataFrame
+        :return: The filtered data frame.
+        :rtype: pandas.DataFrame
+        """
         zero_quantile, quantile_995 = df["Speed"].quantile([0.0, 0.995])
         new_df = df[df["Speed"].between(zero_quantile, quantile_995)]
 
@@ -116,7 +155,19 @@ class SpeedDetailedDashboard(QWidget):
 
         return new_df
 
-    def _render_density_chart(self, chart, col_x, col_y):
+    def _render_density_chart(self, chart: Axes, col_x: Series, col_y: Series) -> None:
+        """
+        Render a density scatter chart on the given chart with the given x and y columns.
+        
+        :param chart: The matplotlib axis object to render the density scatter chart on.
+        :type chart: matplotlib.axes.Axes
+        :param col_x: The x column data.
+        :type col_x: pandas.Series
+        :param col_y: The y column data.
+        :type col_y: pandas.Series
+        :return: None
+        :rtype: None
+        """
         xy = np.vstack([col_x, col_y])
         z = gaussian_kde(xy)(xy)
         
