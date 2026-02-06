@@ -17,8 +17,20 @@ from map_viewer import MapViewer
 from pandas_model import PandasModel
 from page_model import PageModel
 
+"""
+Class to create a window to show the data table. It has pagination and sorting features.
+"""
 class DataTableViewer(QWidget):
-    def __init__(self, data_frame):
+    def __init__(self, data_frame: pd.DataFrame) -> None:
+        """
+        Class constructor.
+        
+        :param data_frame: The data frame to be displayed in the table viewer.
+        :type data_frame: pandas.DataFrame
+
+        :return: None
+        :rtype: None
+        """
         super().__init__()
         self.resize(1024, 720)
         self.setWindowTitle("Data table")
@@ -94,8 +106,15 @@ class DataTableViewer(QWidget):
 
         self.setLayout(self.layout)
 
-    def _table_clicked(self, index):
+    def _table_clicked(self, index: int) -> None:
+        """
+        Handles the event of a table row being double clicked. It shows the location of the clicked row on a map.
         
+        :param index: The index of the clicked row.
+        :type index: QModelIndex
+        :return: None
+        :rtype: None
+        """
         model = self._view.model()
         
         latitude = model.data_by_column_name(index.row(), 'Latitude')
@@ -104,7 +123,13 @@ class DataTableViewer(QWidget):
         self._map_viewer = MapViewer()
         self._map_viewer.show_marker(latitude, longitude)
 
-    def _format_data(self):
+    def _format_data(self) -> None:
+        """
+        Format the data to be shown on the table. 
+        
+        :return: None
+        :rtype: None
+        """
         self._df["Time"] = self._df["Time"].apply(lambda x: x.strftime('%H:%M:%S'))
         self._df["Tot. Distance"] = round(self._df["Tot. Distance"], 2)
         self._df["Tot. Time"] = self._df["Tot. Time"].apply(
@@ -115,49 +140,105 @@ class DataTableViewer(QWidget):
         self._df["Speed rollmean"] = round(self._df["Speed rollmean"], 2)
         self._df["Avg Speed"] = round(self._df["Avg Speed"], 2)
 
-    def go_to_first_page(self):
+    def go_to_first_page(self) -> None:
+        """
+        Handle the event of the first page button being clicked. 
+        
+        :return: None
+        :rtype: None
+        """
         self._current_page = 0
         self.updateModel()
         self.render()
 
-    def go_to_last_page(self):
+    def go_to_last_page(self) -> None:
+        """
+        Handle the event of the last page button being clicked.
+        
+        :return: None
+        :rtype: None
+        """
         self._current_page = self._number_of_pages - 1
         self.updateModel()
         self.render()
 
-    def go_to_next_page(self):
+    def go_to_next_page(self) -> None:
+        """
+        Handle the event of the next page button being clicked.
+        
+        :return: None
+        :rtype: None
+        """
         self._current_page = min(self._current_page + 1, self._number_of_pages - 1)
         self.updateModel()
         self.render()
 
-    def go_to_previous_page(self):
+    def go_to_previous_page(self) -> None:
+        """
+        Handle the event of the previous page button being clicked.
+        
+        :return: None
+        :rtype: None
+        """
         self._current_page = max(0, self._current_page - 1)
         self.updateModel()
         self.render()
 
-    def page_size_changed(self, index):
+    def page_size_changed(self, index: int) -> None:
+        """
+        Handle the event of the page size combo box value being changed.
+    
+        param index: The index of the selected value on the combo box.
+        type index: int
+        :return: None
+        :rtype: None
+        """
         value = self._page_size_combobox.currentText()
         self._page_size = int(value) 
         self._number_of_pages = ceil(len(self._df)/self._page_size)
         self.updateModel()
         self.render()
 
-    def render(self):
+    def render(self) -> None:
+        """
+        Render the table viewer according to the current page and page size.
+        
+        :return: None
+        :rtype: None
+        """
         self._next_page_button.setEnabled(self._current_page < self._number_of_pages - 1)
         self._previous_page_button.setEnabled(self._current_page > 0)
 
         self._pagination_label.setText(f"Page {self._current_page + 1} of {self._number_of_pages}")
 
-    def updateModel(self):
+    def updateModel(self) -> None:
+        """
+        Update the table model according to the current page and page size.
+
+        :return: None
+        :rtype: None
+        """
         self._page_model.setMaxRows(self._page_size)
         self._page_model.setCurrentPage(self._current_page)
 
-    def exportTableToExcel(self):
+    def exportTableToExcel(self) -> None:
+        """
+        Export table data to an excel file.
+        
+        :return: None
+        :rtype: None
+        """
         file_name, _ = QFileDialog.getSaveFileName(self, "Export data frame", "", "Excel Files(*.xlsx)")
         if file_name:
             self._df.to_excel(file_name)
 
-    def _show_on_map_button_clicked(self):
+    def _show_on_map_button_clicked(self) -> None:
+        """
+        Show the location of all the rows on the current table page on a map.
+        
+        :return: None
+        :rtype: None
+        """
         points = []
         model = self._view.model()
         if model.rowCount() == 0:
@@ -168,7 +249,6 @@ class DataTableViewer(QWidget):
             longitude = float(model.data_by_column_name(i, 'Longitude'))
             points.append([latitude, longitude])
 
-        half = int(len(points)/2)
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points, 10)
         
