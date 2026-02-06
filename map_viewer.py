@@ -6,9 +6,23 @@ from folium.features import DivIcon
 class MapViewer:
 
     def __init__(self):
+        """
+        Class constructor
+        
+        """
         pass
 
-    def show_marker(self, lat, long):
+    def show_marker(self, lat: float, long: float) -> None:
+        """
+        Docstring for show_marker
+        
+        :param lat: Latitude of the marker.
+        :type lat: float
+        :param long: Longitude of the marker.
+        :type long: float
+        :return: None
+        :rtype: None
+        """
         map = folium.Map(location=[lat, long], zoom_start=13)
         
         folium.Marker(location=[lat, long]).add_to(map)
@@ -21,7 +35,17 @@ class MapViewer:
         self._web_viewer.resize(640, 480)
         self._web_viewer.show()
 
-    def show_poly_line(self, points, zoom = 15):
+    def show_poly_line(self, points: list[tuple[float, float]], zoom: int = 15) -> None:
+        """
+        Show a poly line on the map with the given points.
+    
+        :param points: The points to be shown on the map.
+        :type points: list[tuple[float, float]]
+        :param zoom: The zoom level of the map.
+        :type zoom: int
+        :return: None
+        :rtype: None
+        """
         half = int(len(points)/2)
         self._map = folium.Map(
                 location=points[half], zoom_start= zoom
