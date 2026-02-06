@@ -5,11 +5,17 @@ from geopy import distance
 import pandas as pd
 import numpy as np
 
-"""
-Calculate the geodesic distance between two points based in their
-coordinates. 
-"""
-def calculate_distance(a, b):
+
+def calculate_distance(a: gpxpy.gpx.GPXTrackPoint, b: gpxpy.gpx.GPXTrackPoint) -> float:
+    """
+    Calculate the geodesic distance between two points based in their
+    coordinates. 
+    :param a: The first point.
+    :type a: gpxpy.gpx.GPXTrackPoint
+    :param b: The second point.
+    :type b: gpxpy.gpx.GPXTrackPoint
+    :return: The distance between the two points in meters.
+    """
     p1 = (a.latitude, a.longitude, a.elevation)
     p2 = (b.latitude, b.longitude, b.elevation)
 
@@ -17,11 +23,15 @@ def calculate_distance(a, b):
 
     return math.sqrt(flat_distance**2 + (p2[2] - p1[2])**2)
 
-"""
-Read the data from a gpx file and use it to fill a pandas dataframe.
-"""
-def get_data_frame_from_gpx_file(file_name): 
-    
+def get_data_frame_from_gpx_file(file_name: str) -> pd.DataFrame: 
+    """
+    Read the data from a gpx file and use it to fill a pandas dataframe.
+
+    :param file_name: The path of the gpx file.
+    :type file_name: str
+    :return: A pandas dataframe containing the data from the gpx file.
+    :rtype: pandas.DataFrame
+    """
     gpx_file = open(file_name, 'r')
     gpx = gpxpy.parse(gpx_file)
     rows = []
@@ -57,11 +67,15 @@ def get_data_frame_from_gpx_file(file_name):
 
     return df
 
-"""
-Calculate the instantaneous speed on each measurement. 
-"""
-def calculate_speed_data_frame(df):
+def calculate_speed_data_frame(df: pd.DataFrame) -> None:
+    """
+    Calculate the instantaneous speed on each measurement. 
 
+    :param df: The dataframe containing the data.
+    :type df: pandas.DataFrame
+    :return: None
+    :rtype: None
+    """
     toSeconds = lambda timeDelta: timeDelta.dt.total_seconds()
     speedEval = lambda time, distance : np.where(time > 0, 3.6*distance/time, 0)
     df["Delta Time"] = toSeconds(df["Time"].diff())
