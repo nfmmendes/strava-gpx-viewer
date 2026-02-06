@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qtagg import \
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
+import pandas as pd
 from PyQt6.QtWidgets import QPushButton, QToolTip
 from map_viewer import MapViewer
 
@@ -16,6 +17,9 @@ from chart_range_selector import ChartRangeSelector
 
 class ChartDashboard(QtWidgets.QWidget):
     def __init__(self):
+        """
+        Class constructor. 
+        """
         super().__init__()
         layout = QtWidgets.QGridLayout(self)
         self._redraw = False
@@ -45,7 +49,15 @@ class ChartDashboard(QtWidgets.QWidget):
                                 border: black solid 1px
                    }""")
                 
-    def _speed_chart_hover(self, event):
+    def _speed_chart_hover(self, event) -> None:
+        """
+        Handle the hovering event on the speed chart.
+
+        :param event: The hover event. 
+        :type event: MouseEvent.
+        :return: None
+        :rtype: None
+        """
         x, y = event.xdata, event.ydata
         text = ""
 
@@ -67,7 +79,15 @@ class ChartDashboard(QtWidgets.QWidget):
            self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
 
-    def _speed_chart_click(self ,event):
+    def _speed_chart_click(self ,event) -> None:
+        """"
+        Handles the click on "speed chart" event. 
+
+        :param event: The mouse click event. 
+        :type event: Mouse event
+        :return: None
+        :rtype: None
+        """
         if not event.dblclick:
             return 
         
@@ -82,7 +102,17 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
 
-    def select_callback(self, eclick, erelease):
+    def select_callback(self, eclick, erelease) -> None:
+        """
+        Handles the area selection event in a chart. 
+        
+        :param eclick: The mouse click event.
+        :type eclick: MouseEvent
+        :param erelease: The mouse release event. 
+        :type erelease: MouseEvent
+        :return: None
+        :rtype: None
+        """
         start = abs(self._speed_chart_data['KM'] - eclick.xdata).idxmin()
         end = abs(self._speed_chart_data['KM'] - erelease.xdata).idxmin()
         
@@ -93,8 +123,15 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer.show_poly_line(points)
         self._chart_range_selector.reset()
 
-    def _clean_speed_chart_data(self, df):
-        # Clean elevation grade data
+    def _clean_speed_chart_data(self, df) -> pd.DataFrame:
+        """
+        Clean the elevation grade data
+        
+        :param df: The data frame containing the data to be cleaned. 
+        :type df: pandas.DataFrame
+        :return: The clean dataframe
+        :rtype: pandas.DataFrame
+        """
         summarized_df = df[["Latitude", "Longitude", "KM", "Elevation Gain", 
                             "Distance", "Delta Time", "Avg Speed", "Speed rollmean"]]
 
@@ -110,7 +147,13 @@ class ChartDashboard(QtWidgets.QWidget):
         grade_threshold = grades.iloc[minimum_measurements - 1] - 0.02
         return summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
 
-    def _plot_speed(self, df):
+    def _plot_speed(self, df) -> None:
+        """
+        Plot the speed chart
+        
+        :param df: The dataframe with the data to be plot. 
+        :type df: pandas.DataFrame
+        """
         self._speed_chart_canvas.figure.clf()
         chart = self._speed_chart_canvas.figure.subplots()
 
@@ -161,9 +204,15 @@ class ChartDashboard(QtWidgets.QWidget):
  
         instant_line.figure.canvas.draw()
 
-    def on_speed_pick(self, event):
-        # On the pick event, find the original line corresponding to the legend
-        # proxy line, and toggle its visibility.
+    def on_speed_pick(self, event) -> None:
+        """
+        Find the original line corresponding to the legend proxy line, and toggle its visibility.
+
+        :param event: The pick event.
+        :type event: PickEvent
+        """
+
+        #Clean elevation grade data
         legend_line = event.artist
 
         # Do nothing if the source of the event is not a legend line.
@@ -180,7 +229,13 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.canvas.draw()
 
 
-    def _plot_stats_over_time(self, df):
+    def _plot_stats_over_time(self, df) -> None:
+        """
+        Plot the chart "Stats over time", that show the average speed and distance vs total time.
+        
+        :param df: The dataframe containing the data to be plotted. 
+        :type df: pandas.DataFrame. 
+        """
         self._stats_time_chart_canvas.figure.clf()
         chart = self._stats_time_chart_canvas.figure.subplots()
 
@@ -220,12 +275,34 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas.figure.savefig("./time_stats_chart.png")
         plot.figure.canvas.draw()
 
-    def _normalized_grade(self, df, index, step_size):
+    def _normalized_grade(self, df, index, step_size) -> float:
+        """
+        Normalizes the road grade to remove noise/outliers. 
+        In this function, gradients over 12% are considered outliers and are normalized to 12%. 
+        
+        :param df: The dataframe with the data to be normalized. 
+        :type df: pandas.DataFrame
+        :param index: The index of the last element to be normalized 
+        :type index: int
+        :param step_size: The normalization step size. 
+        :type step_size: int
+
+        :return: The normalized road grade. 
+        :rtype: float
+        """
         grade = (100*df.iloc[index - step_size : index]["Elevation Gain"]/df.iloc[index - step_size : index]["Distance"]).mean()
-        grade = min(max(grade, -12), 12) # Keeps the gra between -12 and 12
+        grade = min(max(grade, -12), 12) # Keeps the grade between -12 and 12
         return (12 + grade)/24 # A value between 0 and 1
 
-    def _plot_elevation_over_distance(self, df):
+    def _plot_elevation_over_distance(self, df) -> None:
+        """
+        Plot the elevation vs distance chart.
+        
+        :param df: The database containing the data to be plotted. 
+        :type df: Pandas dataframe. 
+        :return: None
+        :rtype: None
+        """
         self._elevation_distance_chart_canvas.figure.clf()
         chart = self._elevation_distance_chart_canvas.figure.subplots()
 
@@ -248,11 +325,23 @@ class ChartDashboard(QtWidgets.QWidget):
         self._elevation_distance_chart_canvas.figure.savefig("./elevation_distance_chart.png")
         plot.figure.canvas.draw()
 
-    def open_grade_detailed_chart(self):
+    def open_grade_detailed_chart(self) -> NotImplementedError:
+        """
+        Open a window with detailed charts. 
+        
+        :return: None
+        :rtype: None
+        """
         self._advanced_dashboard = AdvancedDashboardViewer(self._speed_chart_data)
         self._advanced_dashboard.show() 
     
     def initialize_charts(self, df):
+        """
+        Initialize, with a parallel processing, all the charts in the dashboard.
+        
+        :param df: Dataframe with the data to be plotted.
+        :param df: pandas.DataFrame. 
+        """
         threads = []
         threads.append(Thread(target=self._plot_speed, args=[df]))
         threads.append(Thread(target=self._plot_stats_over_time, args=[df]))
