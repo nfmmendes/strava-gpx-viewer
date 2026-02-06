@@ -7,7 +7,13 @@ from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
 
 class GradeDetailedDashboard(QWidget):
-    def __init__(self, data_frame):
+    def __init__(self, data_frame: pd.DataFrame):
+        """
+        Class consturctor.
+        
+        :param data_frame: The data frame to be used in the dashboard.
+        :type data_frame: pandas.DataFrame
+        """
         super().__init__()
         layout = QtWidgets.QVBoxLayout(self)
         self._redraw = False
@@ -36,7 +42,15 @@ class GradeDetailedDashboard(QWidget):
         self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
         self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
 
-    def _process_data(self, data_frame): 
+    def _process_data(self, data_frame: pd.DataFrame) -> pd.DataFrame: 
+        """
+        Process object data to be used on charts.
+        
+        :param data_frame: The data frame to be processed.
+        :type data_frame: pandas.DataFrame
+        :return: The processed data frame.
+        :rtype: pandas.DataFrame
+        """
         ## Process data
         intervals = np.arange(-10, 10.00001, 2)
         intervals = np.append(np.array([-np.inf]), intervals)
@@ -49,7 +63,15 @@ class GradeDetailedDashboard(QWidget):
 
         return new_data
 
-    def _create_charts(self, df):
+    def _create_charts(self, df: pd.DataFrame) -> None:
+        """
+        Create the charts to be shown in the dashboard.
+        
+        :param df: The data frame to be used in the charts.
+        :type df: pandas.DataFrame
+        :return: None
+        :rtype: None
+        """
         processed_df = self._process_data(df)
 
         chart = self._grade_frequence_canvas.figure.subplots()
@@ -67,7 +89,21 @@ class GradeDetailedDashboard(QWidget):
         self._create_bar_chart(self._distance_grade_canvas, processed_df["Distance"]/1000, "Distance (Km)")
         self._create_bar_chart(self._time_grade_canvas, processed_df["Delta Time"]/60, "Time (min)")
 
-    def _create_bar_chart(self, canvas, y_values, y_label, y_margin = 0.2):
+    def _create_bar_chart(self, canvas: FigureCanvas, y_values : pd.Series, y_label: str, y_margin: float = 0.2) -> None:
+        """
+        Create a bar chart on the given canvas.
+
+        :param canvas: The canvas to create the chart on.
+        :type canvas: FigureCanvas
+        :param y_values: The values to be used as y values on the chart.
+        :type y_values: pandas.Series
+        :param y_label: The label to be used on the y axis.
+        :type y_label: str
+        :param y_margin: The margin to be used on the y axis.
+        :type y_margin: float
+        :return: None
+        :rtype: None
+        """
         chart = canvas.figure.subplots()
         chart.bar(self._intervals , y_values)
         chart.set_xlabel("Grade intervals (%)")
