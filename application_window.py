@@ -8,8 +8,15 @@ from chart_dashboard import ChartDashboard
 from data_table_viewer import DataTableViewer
 from threading import Thread
 
+"""
+Application main class.
+This is a QMainWindow subclass. 
+"""
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
+        """
+        Class constructor. 
+        """
         super().__init__()
         self._main = QtWidgets.QWidget()
         self.setWindowTitle("Gpx stats viewer")
@@ -78,18 +85,36 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.showMaximized()
 
 
-    def show_data_table(self):
+    def show_data_table(self) -> None:
+        """
+        Open a window containig all the class current data. 
+        
+        :return: None
+        :rtype: None
+        """
         self.data_table_viewer = DataTableViewer(self._df)
         self.data_table_viewer.show()
 
-    def export_report_to_pdf(self):
+    def export_report_to_pdf(self) -> None:
+        """
+        Export the class current data to a pdf file. 
+        
+        :return: None
+        :rtype: None
+        """
         file_name, _ = QtWidgets.QFileDialog.getSaveFileName(self, 
                                                             "Save File", "", "PDF Files(*.pdf)")
         if len(file_name) > 0:
             pdf_generator = PdfReportGenerator(self._df)
             pdf_generator.generate(file_name)
 
-    def open_file_dialog(self):
+    def open_file_dialog(self) -> None:
+        """
+        Open a file dialog to get the gpx file path. 
+        
+        :return: None
+        :rtype: None
+        """
         fname, _ = QFileDialog.getOpenFileName(self,"Open File", "","GPX Files (*.gpx)",)
         
         if len(fname) > 0: 
@@ -101,7 +126,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)
 
-    def initialize_stats(self, df):
+    def initialize_stats(self, df) -> None:
+        """
+        Initialize gpx file main stats on the screen. 
+        
+        :param df: The dataframe containing the data. 
+        :type df: pandas.DataFrame
+
+        :return: None
+        :rtype: None
+        """
         start_time = df.iloc[0]["Time"].to_pydatetime()
         format_total_time = lambda x : f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
         self._start_time_value_label.setText(start_time.strftime("%Y-%m-%d %H:%M:%S"))
