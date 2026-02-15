@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+from pandas import DataFrame, Series, cut
 
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.backends.backend_qtagg import FigureCanvas
@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 from PyQt6.QtWidgets import QWidget
 
 class GradeDetailedDashboard(QWidget):
-    def __init__(self, data_frame: pd.DataFrame):
+    def __init__(self, data_frame: DataFrame):
         """
         Class consturctor.
         
@@ -42,7 +42,7 @@ class GradeDetailedDashboard(QWidget):
         self._distance_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
         self._time_grade_canvas.figure.subplots_adjust(bottom=0.25, hspace=0.2)
 
-    def _process_data(self, data_frame: pd.DataFrame) -> pd.DataFrame: 
+    def _process_data(self, data_frame: DataFrame) -> DataFrame: 
         """
         Process object data to be used on charts.
         
@@ -55,7 +55,7 @@ class GradeDetailedDashboard(QWidget):
         intervals = np.arange(-10, 10.00001, 2)
         intervals = np.append(np.array([-np.inf]), intervals)
         intervals = np.append(intervals, np.array([np.inf]))
-        cuts = pd.cut(100*data_frame["Elevation Gain"]/data_frame["Distance"], intervals)
+        cuts = cut(100*data_frame["Elevation Gain"]/data_frame["Distance"], intervals)
         
         new_data = data_frame[["Elevation Gain", "Distance", "Delta Time"]].groupby(cuts, observed = True).sum()
         new_data["Speed"] = np.where(new_data["Delta Time"] > 0, 3.6*new_data["Distance"]/new_data["Delta Time"], 0)
@@ -63,7 +63,7 @@ class GradeDetailedDashboard(QWidget):
 
         return new_data
 
-    def _create_charts(self, df: pd.DataFrame) -> None:
+    def _create_charts(self, df: DataFrame) -> None:
         """
         Create the charts to be shown in the dashboard.
         
@@ -89,7 +89,7 @@ class GradeDetailedDashboard(QWidget):
         self._create_bar_chart(self._distance_grade_canvas, processed_df["Distance"]/1000, "Distance (Km)")
         self._create_bar_chart(self._time_grade_canvas, processed_df["Delta Time"]/60, "Time (min)")
 
-    def _create_bar_chart(self, canvas: FigureCanvas, y_values : pd.Series, y_label: str, y_margin: float = 0.2) -> None:
+    def _create_bar_chart(self, canvas: FigureCanvas, y_values : Series, y_label: str, y_margin: float = 0.2) -> None:
         """
         Create a bar chart on the given canvas.
 

@@ -5,17 +5,18 @@ from threading import Thread
 from matplotlib.backends.backend_qtagg import FigureCanvas
 from matplotlib.backends.backend_qtagg import \
     NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backend_bases import MouseEvent
 from matplotlib.backends.qt_compat import QtWidgets
 from matplotlib.figure import Figure
 import matplotlib.cm as cm
-import pandas as pd
-from PyQt6.QtWidgets import QPushButton, QToolTip
+from pandas import DataFrame
+from PyQt6.QtWidgets import QWidget, QPushButton, QToolTip
 from map_viewer import MapViewer
 
 from advanced_dashboard_viewer import AdvancedDashboardViewer
 from chart_range_selector import ChartRangeSelector
 
-class ChartDashboard(QtWidgets.QWidget):
+class ChartDashboard(QWidget):
     def __init__(self):
         """
         Class constructor. 
@@ -49,7 +50,7 @@ class ChartDashboard(QtWidgets.QWidget):
                                 border: black solid 1px
                    }""")
                 
-    def _speed_chart_hover(self, event) -> None:
+    def _speed_chart_hover(self, event: MouseEvent) -> None:
         """
         Handle the hovering event on the speed chart.
 
@@ -79,7 +80,7 @@ class ChartDashboard(QtWidgets.QWidget):
            self._speed_chart_canvas.setToolTip(None)
            QToolTip.hideText()
 
-    def _speed_chart_click(self ,event) -> None:
+    def _speed_chart_click(self,event : MouseEvent) -> None:
         """"
         Handles the click on "speed chart" event. 
 
@@ -102,7 +103,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer = MapViewer()
         self._map_viewer.show_poly_line(points)
 
-    def select_callback(self, eclick, erelease) -> None:
+    def select_callback(self, eclick: MouseEvent, erelease: MouseEvent) -> None:
         """
         Handles the area selection event in a chart. 
         
@@ -123,7 +124,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._map_viewer.show_poly_line(points)
         self._chart_range_selector.reset()
 
-    def _clean_speed_chart_data(self, df) -> pd.DataFrame:
+    def _clean_speed_chart_data(self, df: DataFrame) -> DataFrame:
         """
         Clean the elevation grade data
         
@@ -147,7 +148,7 @@ class ChartDashboard(QtWidgets.QWidget):
         grade_threshold = grades.iloc[minimum_measurements - 1] - 0.02
         return summarized_df[abs(summarized_df["Elevation Gain"]/summarized_df["Distance"]) < grade_threshold]
 
-    def _plot_speed(self, df) -> None:
+    def _plot_speed(self, df: DataFrame) -> None:
         """
         Plot the speed chart
         
@@ -204,7 +205,7 @@ class ChartDashboard(QtWidgets.QWidget):
  
         instant_line.figure.canvas.draw()
 
-    def on_speed_pick(self, event) -> None:
+    def on_speed_pick(self, event: MouseEvent) -> None:
         """
         Find the original line corresponding to the legend proxy line, and toggle its visibility.
 
@@ -229,7 +230,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._speed_chart_canvas.figure.canvas.draw()
 
 
-    def _plot_stats_over_time(self, df) -> None:
+    def _plot_stats_over_time(self, df: DataFrame) -> None:
         """
         Plot the chart "Stats over time", that show the average speed and distance vs total time.
         
@@ -275,7 +276,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._stats_time_chart_canvas.figure.savefig("./time_stats_chart.png")
         plot.figure.canvas.draw()
 
-    def _normalized_grade(self, df, index, step_size) -> float:
+    def _normalized_grade(self, df: DataFrame, index: int, step_size: int) -> float:
         """
         Normalizes the road grade to remove noise/outliers. 
         In this function, gradients over 12% are considered outliers and are normalized to 12%. 
@@ -294,7 +295,7 @@ class ChartDashboard(QtWidgets.QWidget):
         grade = min(max(grade, -12), 12) # Keeps the grade between -12 and 12
         return (12 + grade)/24 # A value between 0 and 1
 
-    def _plot_elevation_over_distance(self, df) -> None:
+    def _plot_elevation_over_distance(self, df: DataFrame) -> None:
         """
         Plot the elevation vs distance chart.
         
@@ -335,7 +336,7 @@ class ChartDashboard(QtWidgets.QWidget):
         self._advanced_dashboard = AdvancedDashboardViewer(self._speed_chart_data)
         self._advanced_dashboard.show() 
     
-    def initialize_charts(self, df):
+    def initialize_charts(self, df: DataFrame):
         """
         Initialize, with a parallel processing, all the charts in the dashboard.
         

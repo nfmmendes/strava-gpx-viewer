@@ -2,7 +2,7 @@ import gpxpy
 import gpxpy.gpx
 import math
 from geopy import distance
-import pandas as pd
+from pandas import DataFrame
 import numpy as np
 
 
@@ -23,7 +23,7 @@ def calculate_distance(a: gpxpy.gpx.GPXTrackPoint, b: gpxpy.gpx.GPXTrackPoint) -
 
     return math.sqrt(flat_distance**2 + (p2[2] - p1[2])**2)
 
-def get_data_frame_from_gpx_file(file_name: str) -> pd.DataFrame: 
+def get_data_frame_from_gpx_file(file_name: str) -> DataFrame: 
     """
     Read the data from a gpx file and use it to fill a pandas dataframe.
 
@@ -51,7 +51,7 @@ def get_data_frame_from_gpx_file(file_name: str) -> pd.DataFrame:
                 rows.append([time, lat, long, elevation, dist, accumulated_distance, accumulated_time])
                 previous = point
             
-    df = pd.DataFrame(columns= ["Time",
+    df = DataFrame(columns= ["Time",
                                 "Latitude", 
                                 "Longitude", 
                                 "Elevation", 
@@ -67,7 +67,7 @@ def get_data_frame_from_gpx_file(file_name: str) -> pd.DataFrame:
 
     return df
 
-def calculate_speed_data_frame(df: pd.DataFrame) -> None:
+def calculate_speed_data_frame(df: DataFrame) -> None:
     """
     Calculate the instantaneous speed on each measurement. 
 

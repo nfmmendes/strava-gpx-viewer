@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QFileDialog, QGri
 from chart_dashboard import ChartDashboard
 from data_table_viewer import DataTableViewer
 from threading import Thread
+from pandas import DataFrame
 
 """
 Application main class.
@@ -126,7 +127,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self._show_data_table_button.setVisible(True)
         self._export_to_pdf_button.setVisible(True)
 
-    def initialize_stats(self, df) -> None:
+    def initialize_stats(self, df: DataFrame) -> None:
         """
         Initialize gpx file main stats on the screen. 
         
