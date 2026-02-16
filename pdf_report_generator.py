@@ -1,4 +1,4 @@
-import pandas as pd
+from pandas import DataFrame, isnull
 from pandas import DataFrame
 from xhtml2pdf import pisa
 
@@ -25,7 +25,7 @@ class PdfReportGenerator:
         p_df["Tot. Distance"] = round(p_df["Tot. Distance"], 2)
         p_df["Tot. Time"] = p_df["Tot. Time"].apply(
                 lambda x: f'{x.components.hours:02d}:{x.components.minutes:02d}:{x.components.seconds:02d}'
-                                  if not pd.isnull(x) else ''
+                                  if not isnull(x) else ''
                                   )
         p_df["Speed"] = round(p_df["Speed"], 2)
         p_df["Speed rollmean"] = round(p_df["Speed rollmean"], 2)
